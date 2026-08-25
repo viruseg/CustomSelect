@@ -365,6 +365,20 @@ export default class CustomSelect {
         refs.listbox.addEventListener('click', onListClick);
         refs.popover.addEventListener('keydown', /** @type {EventListener} */ (onPopoverKeyDown));
 
+        // Перманентный сторож внешнего light-dismiss (спека §11): ancestor display:none,
+        // сторонний hidePopover и т.п. не проходят через close() — сверяемся через обычный
+        // путь закрытия, иначе #openState навсегда остаётся 'open' и очередь переходов
+        // отравляется зависшим #awaitToggle.
+        /** @param {Event} e */
+        const onExternalClose = (e) => {
+            const state = /** @type {{newState?: string}} */ (e).newState;
+            if (this.#destroyed || this.#openState === 'destroyed') return;
+            if (state === 'closed' && (this.#openState === 'open' || this.#openState === 'opening')) {
+                void this.close();
+            }
+        };
+        refs.popover.addEventListener('toggle', onExternalClose);
+
         this.#disposables.push(() => {
             refs.searchInput.removeEventListener('input', onSearchInput);
             refs.searchClear.removeEventListener('click', onSearchClear);
@@ -372,6 +386,7 @@ export default class CustomSelect {
             refs.clearAllButton.removeEventListener('click', onClearAllClick);
             refs.listbox.removeEventListener('click', onListClick);
             refs.popover.removeEventListener('keydown', /** @type {EventListener} */ (onPopoverKeyDown));
+            refs.popover.removeEventListener('toggle', onExternalClose);
         });
     }
 
@@ -578,6 +593,8 @@ export default class CustomSelect {
      * @returns {Promise<void>}
      */
     #awaitToggle(popover, expected) {
+        // Toggle уже мог отработать до подписки — тогда разрешаемся немедленно по факту.
+        if (popover.matches(':popover-open') === (expected === 'open')) return Promise.resolve();
         return new Promise((resolve) => {
             /** @param {Event} ev */
             const handler = (ev) => {
@@ -605,15 +622,25 @@ export default class CustomSelect {
         const c = this.#cfg();
         if (c.disabled) return;
         this.#openState = 'opening';
-        this.#refreshList();
-        this.#applyGeometryVars();
-        const popover = this.#renderer.getPopover();
-        this.#repositionNow();
-        popover.showPopover();
-        await this.#awaitToggle(popover, 'open');
-        if (this.#destroyed) return;
-        this.#openState = 'open';
-        this.#activateListeners();
+        // Исключение после 'opening' (например, showPopover() на detached-цели) не должно
+        // оставлять вечное 'opening' и отравлять очередь переходов.
+        try {
+            this.#refreshList();
+            this.#applyGeometryVars();
+            const popover = this.#renderer.getPopover();
+            this.#repositionNow();
+            popover.showPopover();
+            await this.#awaitToggle(popover, 'open');
+            if (this.#destroyed) return;
+            this.#openState = 'open';
+            this.#activateListeners();
+        } catch (err) {
+            if (this.#openState === 'opening') {
+                this.#openState = 'closed';
+                this.#deactivateListeners();
+            }
+            throw err;
+        }
         this.#setExpanded(true);
         this.#applyInitialFocus();
         await this.#emitter.emit('open');
@@ -658,15 +685,23 @@ export default class CustomSelect {
     async #closeInternal() {
         if (this.#openState === 'closed' || this.#openState === 'closing' || this.#destroyed) return;
         this.#openState = 'closing';
-        this.#deactivateListeners();
-        const popover = this.#renderer.getPopover();
-        if (popover.matches(':popover-open')) popover.hidePopover();
-        await this.#awaitToggle(popover, 'closed');
-        this.#renderer.elements.toggleButton?.focus();
-        this.#query = '';
-        this.#renderer.setQueryInputValue('');
-        this.#activeId = null;
-        this.#renderer.setActiveOption(null, { searchable: false });
+        // Исключение после 'closing' не должно оставлять вечное 'closing': доводим до
+        // closed-состояния (false-путь matches(':popover-open')) и пробрасываем дальше.
+        try {
+            this.#deactivateListeners();
+            const popover = this.#renderer.getPopover();
+            if (popover.matches(':popover-open')) popover.hidePopover();
+            await this.#awaitToggle(popover, 'closed');
+            this.#renderer.elements.toggleButton?.focus();
+            this.#query = '';
+            this.#renderer.setQueryInputValue('');
+            this.#activeId = null;
+            this.#renderer.setActiveOption(null, { searchable: false });
+        } catch (err) {
+            this.#openState = 'closed';
+            this.#deactivateListeners();
+            throw err;
+        }
         this.#openState = 'closed';
         this.#setExpanded(false);
         await this.#emitter.emit('close');
@@ -880,8 +915,11 @@ export default class CustomSelect {
         const prev = { ...this.#cfg() };
         const next = this.#configManager.update(patch);
 
-        if ('items' in patch) await this.setItems(next.items);
-        if ('selectedIds' in patch) await this.setValue(/** @type {(string|number)[]} */ (next.selectedIds));
+        // Спека §19–20: берём СЫРЫЕ значения из patch — ConfigManager.mergeValidated
+        // пропускает keys items/selectedIds, поэтому next.* содержал бы устаревшие значения.
+        // Валидация выполняется внутри пайплайнов setItems/setValue.
+        if ('items' in patch) await this.setItems(/** @type {CustomSelectItem[]} */ (patch.items));
+        if ('selectedIds' in patch) await this.setValue(/** @type {(string|number)[]} */ (patch.selectedIds));
 
         if ('multiple' in patch && prev.multiple !== next.multiple) {
             const collapsed = this.#state.setMultiple(next.multiple === true);
