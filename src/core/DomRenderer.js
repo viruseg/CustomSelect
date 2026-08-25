@@ -340,6 +340,7 @@ export default class DomRenderer {
      * @param {boolean} ctx.multiple
      * @param {Set<string|number>} ctx.selectedIds
      * @param {boolean} ctx.highlight
+     * @param {string[]} [ctx.tokens] готовые токены подсветки; по умолчанию tokenize(ctx.query)
      * @param {boolean} [ctx.searchable]
      * @param {SearchMode|undefined} ctx.searchMode
      * @param {boolean} ctx.searchCaseSensitive
@@ -354,7 +355,7 @@ export default class DomRenderer {
 
         const frag = document.createDocumentFragment();
         let optionIndex = 0;
-        const tokens = tokenize(ctx.query);
+        const tokens = Array.isArray(ctx.tokens) ? ctx.tokens : tokenize(ctx.query);
         const showHighlight = ctx.highlight && tokens.length > 0 && ctx.searchMode !== undefined;
 
         for (const group of groupItems(matched)) {
