@@ -38,7 +38,9 @@
 
 ES2022+ / ECMAScript Latest. Запрещены: транспиляция ради legacy, полифиллы, устаревшие API без нужды, сторонние runtime-библиотеки.
 
-Используются: ES Modules, private class fields, `Set`, `Map`, `AbortController` (где полезно), `ResizeObserver`, `requestAnimationFrame`, HTML Popover API, современные DOM API.
+Используются: ES Modules, `Set`, `Map`, `AbortController` (где полезно), `ResizeObserver`, `requestAnimationFrame`, HTML Popover API, современные DOM API.
+
+**Инкапсуляция:** все приватные члены классов — поля **и** методы — объявляются исключительно через синтаксис `#` (true private). Публичному API доступны только методы и свойства, определённые в §63; всё остальное внутри классов обязано быть `#private`. Обращение к чужим внутренностям через `_prefix` или документированные «internal» поля запрещено.
 
 ### 2.3. Зависимости
 
