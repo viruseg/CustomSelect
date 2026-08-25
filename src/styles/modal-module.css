@@ -1,0 +1,159 @@
+.csel-popover {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: var(--csel-modal-width, auto);
+    min-width: var(--csel-trigger-min-width, 0px);
+    max-height: min(var(--csel-modal-max-height), calc(100vh - 16px));
+    background: var(--csel-bg-modal);
+    border: 1px solid var(--csel-border);
+    border-radius: var(--csel-radius);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    color: var(--csel-text);
+    z-index: 2147483000;
+}
+.csel-popover:not(:popover-open) { display: none; }
+
+.csel-search-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px;
+    border-bottom: 1px solid var(--csel-divider);
+}
+.csel-search-icon { color: var(--csel-text-muted); }
+.csel-search-input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--csel-text);
+    font-size: 14px;
+    height: var(--csel-line-height);
+}
+.csel-search-input::placeholder { color: var(--csel-text-muted); }
+.csel-search-input:disabled { opacity: 0.5; }
+.csel-search-clear {
+    all: unset;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    color: var(--csel-text-muted);
+}
+.csel-search-clear:hover { color: var(--csel-text); background: var(--csel-bg-hover); }
+
+.csel-batch {
+    display: flex;
+    gap: 6px;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--csel-divider);
+}
+.csel-select-all,
+.csel-clear-all {
+    all: unset;
+    cursor: pointer;
+    padding: 4px 10px;
+    font-size: 13px;
+    border-radius: 4px;
+    color: var(--csel-text-muted);
+    border: 1px solid var(--csel-border);
+}
+.csel-select-all:hover:not(:disabled),
+.csel-clear-all:hover:not(:disabled) {
+    color: var(--csel-text);
+    border-color: var(--csel-accent);
+    background: var(--csel-bg-hover);
+}
+.csel-select-all:disabled,
+.csel-clear-all:disabled { opacity: 0.4; cursor: default; }
+
+.csel-listbox {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 4px;
+    display: grid;
+    grid-template-columns: repeat(var(--csel-columns), minmax(var(--csel-column-width, 160px), 1fr));
+    grid-auto-flow: column;
+    column-gap: var(--csel-column-gap);
+    align-content: start;
+}
+.csel-listbox:focus-visible { outline: 2px solid var(--csel-border-focus); outline-offset: -2px; }
+
+.csel-group-header {
+    grid-column: 1 / -1;
+    padding: 8px 6px 4px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--csel-text-muted);
+    user-select: none;
+}
+
+.csel-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: var(--csel-line-height);
+    padding: 0 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.csel-option:hover:not(.csel-option--disabled),
+.csel-option--active:not(.csel-option--disabled) { background: var(--csel-bg-hover); }
+.csel-option--selected { color: var(--csel-accent); }
+.csel-option--disabled { opacity: 0.45; cursor: not-allowed; }
+.csel-option-content { overflow: hidden; text-overflow: ellipsis; }
+
+.csel-checkbox {
+    flex: 0 0 auto;
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--csel-tag-border);
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    line-height: 1;
+    color: transparent;
+}
+.csel-option--selected .csel-checkbox {
+    background: var(--csel-accent);
+    border-color: var(--csel-accent-hover);
+    color: #fff;
+}
+.csel-option--selected .csel-checkbox::after { content: '✓'; }
+
+.csel-option-media {
+    display: inline-flex;
+    height: calc(var(--csel-line-height) - 12px);
+    width: calc(var(--csel-line-height) - 12px);
+    flex: 0 0 auto;
+}
+.csel-option-label { overflow: hidden; text-overflow: ellipsis; }
+
+.csel-hl { background: var(--csel-accent); color: #fff; border-radius: 2px; padding: 0 1px; }
+
+.csel-status { padding: 16px; }
+.csel-empty { color: var(--csel-text-muted); text-align: center; padding: 8px 0; }
+.csel-spinner {
+    width: 24px;
+    height: 24px;
+    margin: 8px auto;
+    border-radius: 50%;
+    border: 2px solid var(--csel-border);
+    border-top-color: var(--csel-accent);
+    animation: csel-spin 0.7s linear infinite;
+}
+@keyframes csel-spin { to { transform: rotate(360deg); } }

@@ -1,1 +1,4 @@
 @import './variables.css';
+@import './main-module.css';
+@import './modal-module.css';
+@import './animations.css';

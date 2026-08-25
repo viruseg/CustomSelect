@@ -1,0 +1,16 @@
+@media (prefers-reduced-motion: no-preference) {
+    .csel-popover[data-csel-anim='true']:popover-open {
+        animation: csel-pop-in var(--csel-transition) ease-out;
+    }
+}
+
+@keyframes csel-pop-in {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
