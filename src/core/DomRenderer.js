@@ -1,6 +1,15 @@
+import { tokenize, highlightSegments } from './SearchEngine.js';
+
 /**
  * @typedef {import('../types.js').CustomSelectItem} CustomSelectItem
  * @typedef {import('../types.js').CustomSelectConfig} CustomSelectConfig
+ * @typedef {import('../types.js').SearchMode} SearchMode
+ */
+
+/**
+ * Локальная модель опции для клавиатурной навигации.
+ * @typedef {{id: string|number, disabled: boolean, element: HTMLElement}} RendererNavOption
+ * @typedef {{options: RendererNavOption[], rowCount: number|null, activeId: string|number|null}} RendererNavModel
  */
 
 /**
@@ -54,6 +63,16 @@ export default class DomRenderer {
     #els = /** @type {MainRefs} */ ({});
     /** @type {Set<HTMLButtonElement>} */
     #tagRemoveButtons = new Set();
+    /** @type {{popover: HTMLElement, searchHeader: HTMLElement, searchInput: HTMLInputElement, searchClear: HTMLButtonElement,
+     *          selectAllButton: HTMLButtonElement, clearAllButton: HTMLButtonElement,
+     *          listbox: HTMLElement, statusBox: HTMLElement} | null} */
+    #popoverRefs = null;
+    /** @type {RendererNavOption[]} */
+    #navOptions = [];
+    /** @type {number|null} */
+    #navRowCount = null;
+    /** @type {string|number|null} */
+    #activeItemId = null;
 
     /** @param {{instanceId: string}} p */
     constructor({ instanceId }) {
@@ -231,5 +250,327 @@ export default class DomRenderer {
         this.#els.root?.remove();
         this.#els = /** @type {MainRefs} */ ({});
         this.#tagRemoveButtons.clear();
+    }
+
+    /**
+     * Создаёт popover-контейнер однократно и монтирует его в document.body.
+     * @param {CustomSelectConfig} config
+     * @returns {{popover: HTMLElement, searchHeader: HTMLElement, searchInput: HTMLInputElement, searchClear: HTMLButtonElement, selectAllButton: HTMLButtonElement, clearAllButton: HTMLButtonElement, listbox: HTMLElement, statusBox: HTMLElement}}
+     */
+    ensurePopover(config) {
+        if (this.#popoverRefs) return this.#popoverRefs;
+
+        const popover = document.createElement('div');
+        popover.id = `${this.#instanceId}-popover`;
+        popover.setAttribute('popover', 'manual');
+        popover.className = 'csel-popover';
+
+        const searchHeader = document.createElement('div');
+        searchHeader.className = 'csel-search-header';
+        const searchIcon = document.createElement('span');
+        searchIcon.className = 'csel-search-icon';
+        searchIcon.textContent = '⌕';
+        const searchInput = document.createElement('input');
+        searchInput.type = 'search';
+        searchInput.className = 'csel-search-input';
+        const searchClear = document.createElement('button');
+        searchClear.type = 'button';
+        searchClear.className = 'csel-search-clear';
+        searchClear.textContent = '×';
+        searchClear.tabIndex = -1;
+        searchClear.hidden = true;
+        searchHeader.append(searchIcon, searchInput, searchClear);
+
+        const batchBar = document.createElement('div');
+        batchBar.className = 'csel-batch';
+        const selectAllButton = document.createElement('button');
+        selectAllButton.type = 'button';
+        selectAllButton.className = 'csel-select-all';
+        selectAllButton.textContent = 'Выбрать всё';
+        selectAllButton.tabIndex = -1;
+        const clearAllButton = document.createElement('button');
+        clearAllButton.type = 'button';
+        clearAllButton.className = 'csel-clear-all';
+        clearAllButton.textContent = 'Снять всё';
+        clearAllButton.tabIndex = -1;
+        batchBar.append(selectAllButton, clearAllButton);
+
+        const listbox = document.createElement('div');
+        listbox.className = 'csel-listbox';
+        listbox.setAttribute('role', 'listbox');
+        listbox.tabIndex = -1;
+
+        const statusBox = document.createElement('div');
+        statusBox.className = 'csel-status';
+        statusBox.hidden = true;
+
+        popover.append(searchHeader, batchBar, listbox, statusBox);
+        document.body.append(popover);
+
+        this.#popoverRefs = { popover, searchHeader, searchInput, searchClear, selectAllButton, clearAllButton, listbox, statusBox };
+        this.applyPopoverConfig(config);
+        return this.#popoverRefs;
+    }
+
+    /** @returns {HTMLElement} */
+    getPopover() {
+        if (!this.#popoverRefs) throw new Error('Popover is not created yet.');
+        return this.#popoverRefs.popover;
+    }
+
+    /** @param {CustomSelectConfig} config */
+    applyPopoverConfig(config) {
+        if (!this.#popoverRefs) return;
+        const { searchHeader, searchInput, selectAllButton, clearAllButton } = this.#popoverRefs;
+        searchHeader.hidden = config.searchable !== true;
+        searchInput.disabled = config.loading === true || config.disabled === true;
+        const lockActions = config.disabled === true || config.readonly === true || config.loading === true;
+        selectAllButton.hidden = !(config.multiple === true && config.showSelectAll === true);
+        clearAllButton.hidden = !(config.multiple === true && config.showClearAll === true);
+        selectAllButton.disabled = lockActions;
+        clearAllButton.disabled = lockActions;
+    }
+
+    /**
+     * Полная перестройка списка опций.
+     * @param {CustomSelectItem[]} matched
+     * @param {Object} ctx
+     * @param {string} ctx.query
+     * @param {string|number|null} ctx.activeId
+     * @param {boolean} ctx.multiple
+     * @param {Set<string|number>} ctx.selectedIds
+     * @param {boolean} ctx.highlight
+     * @param {boolean} [ctx.searchable]
+     * @param {SearchMode|undefined} ctx.searchMode
+     * @param {boolean} ctx.searchCaseSensitive
+     */
+    renderList(matched, ctx) {
+        if (!this.#popoverRefs) return;
+        const { listbox } = this.#popoverRefs;
+        const scrollLeft = listbox.scrollLeft;
+        listbox.replaceChildren();
+        this.#navOptions = [];
+        this.#activeItemId = null;
+
+        const frag = document.createDocumentFragment();
+        let optionIndex = 0;
+        const tokens = tokenize(ctx.query);
+        const showHighlight = ctx.highlight && tokens.length > 0 && ctx.searchMode !== undefined;
+
+        for (const group of groupItems(matched)) {
+            if (group.name !== null) {
+                const header = document.createElement('div');
+                header.className = 'csel-group-header';
+                header.textContent = group.name;
+                frag.append(header);
+            }
+            for (const item of group.items) {
+                frag.append(this.#buildOption(item, {
+                    optionIndex,
+                    multiple: ctx.multiple,
+                    selected: ctx.selectedIds.has(item.id),
+                    showHighlight,
+                    tokens,
+                    searchMode: ctx.searchMode ?? 'contains',
+                    caseSensitive: ctx.searchCaseSensitive,
+                }));
+                this.#navOptions.push({
+                    id: item.id,
+                    disabled: item.disabled === true,
+                    element: /** @type {HTMLElement} */ (frag.lastElementChild),
+                });
+                optionIndex += 1;
+            }
+        }
+        listbox.append(frag);
+
+        if (ctx.activeId !== null && matched.some((i) => i.id === ctx.activeId && i.disabled !== true)) {
+            this.setActiveOption(ctx.activeId, { searchable: ctx.searchable === true });
+        }
+        listbox.scrollLeft = Math.min(scrollLeft, Math.max(0, listbox.scrollWidth - listbox.clientWidth));
+    }
+
+    /**
+     * @param {CustomSelectItem} item
+     * @param {Object} p
+     * @param {number} p.optionIndex
+     * @param {boolean} p.multiple
+     * @param {boolean} p.selected
+     * @param {boolean} p.showHighlight
+     * @param {string[]} p.tokens
+     * @param {SearchMode} p.searchMode
+     * @param {boolean} p.caseSensitive
+     * @returns {HTMLElement}
+     */
+    #buildOption(item, p) {
+        const el = document.createElement('div');
+        el.className = 'csel-option';
+        el.id = `${this.#instanceId}-opt-${p.optionIndex}`;
+        el.setAttribute('role', 'option');
+        el.dataset.id = String(item.id);
+        el.setAttribute('aria-selected', String(p.selected));
+        if (item.disabled === true) {
+            el.classList.add('csel-option--disabled');
+            el.setAttribute('aria-disabled', 'true');
+        }
+        if (p.selected) el.classList.add('csel-option--selected');
+
+        if (p.multiple) {
+            const checkbox = document.createElement('span');
+            checkbox.className = 'csel-checkbox';
+            checkbox.setAttribute('aria-hidden', 'true');
+            el.append(checkbox);
+        }
+
+        const content = document.createElement('span');
+        content.className = 'csel-option-content';
+        if (item.type === 'image') {
+            const media = document.createElement('span');
+            media.className = 'csel-option-media';
+            const img = document.createElement('img');
+            img.src = item.content;
+            img.className = 'csel-img';
+            media.append(img);
+            content.append(media);
+            const label = document.createElement('span');
+            label.className = 'csel-option-label';
+            label.textContent = accessibleName(item);
+            content.append(label);
+        } else if (p.showHighlight) {
+            for (const seg of highlightSegments(item.content, p.tokens, { searchMode: p.searchMode, searchCaseSensitive: p.caseSensitive })) {
+                if (seg.match) {
+                    const mark = document.createElement('mark');
+                    mark.className = 'csel-hl';
+                    mark.textContent = seg.text;
+                    content.append(mark);
+                } else {
+                    content.append(document.createTextNode(seg.text));
+                }
+            }
+        } else {
+            content.append(document.createTextNode(item.content));
+        }
+        el.append(content);
+        el.title = item.type === 'text' ? item.content : accessibleName(item);
+        return el;
+    }
+
+    /** @returns {RendererNavModel} */
+    getNavModel() {
+        return { options: [...this.#navOptions], rowCount: this.#navRowCount, activeId: this.#activeItemId };
+    }
+
+    /** @param {number|null} rows */
+    setNavRowCount(rows) {
+        this.#navRowCount = rows;
+    }
+
+    /**
+     * @param {string|number|null} itemId
+     * @param {{searchable: boolean}} cfg
+     * @returns {boolean} изменилось ли
+     */
+    setActiveOption(itemId, cfg) {
+        if (!this.#popoverRefs) return false;
+        const prev = this.#activeItemId;
+        if (prev !== null) {
+            const prevEl = this.#navOptions.find((o) => o.id === prev)?.element;
+            prevEl?.classList.remove('csel-option--active');
+        }
+        this.#activeItemId = itemId;
+        const anchor = this.getAnchorElement(cfg);
+        if (itemId === null) {
+            anchor.removeAttribute('aria-activedescendant');
+            return prev !== null;
+        }
+        const nextEl = this.#navOptions.find((o) => o.id === itemId)?.element;
+        nextEl?.classList.add('csel-option--active');
+        nextEl?.scrollIntoView?.({ block: 'nearest' });
+        anchor.setAttribute('aria-activedescendant', `${this.#instanceId}-opt-${this.#navOptions.findIndex((o) => o.id === itemId)}`);
+        return true;
+    }
+
+    /**
+     * Якорь aria-activedescendant и DOM-фокуса.
+     * @param {{searchable: boolean}} config
+     * @returns {HTMLElement}
+     */
+    getAnchorElement(config) {
+        if (!this.#popoverRefs) throw new Error('Popover is not created yet.');
+        return config.searchable ? this.#popoverRefs.searchInput : this.#popoverRefs.listbox;
+    }
+
+    /**
+     * Частичное обновление состояния выбора без перестройки списка.
+     * @param {Set<string|number>} selectedSet
+     */
+    updateOptionStates(selectedSet) {
+        if (!this.#popoverRefs) return;
+        for (const nav of this.#navOptions) {
+            const isSelected = selectedSet.has(nav.id);
+            nav.element.classList.toggle('csel-option--selected', isSelected);
+            nav.element.setAttribute('aria-selected', String(isSelected));
+        }
+    }
+
+    /**
+     * @param {'loading'|'empty-list'|'empty-search'} kind
+     * @param {CustomSelectConfig} config
+     */
+    renderStatus(kind, config) {
+        if (!this.#popoverRefs) return;
+        const { statusBox, listbox } = this.#popoverRefs;
+        statusBox.replaceChildren();
+        if (kind === 'loading') {
+            const spinner = document.createElement('div');
+            spinner.className = 'csel-spinner';
+            spinner.setAttribute('role', 'status');
+            spinner.setAttribute('aria-label', 'Загрузка');
+            statusBox.append(spinner);
+        } else {
+            const text = kind === 'empty-list' ? config.emptyListText : config.emptySearchText;
+            const div = document.createElement('div');
+            div.className = 'csel-empty';
+            div.textContent = text ?? '';
+            statusBox.append(div);
+        }
+        statusBox.hidden = false;
+        listbox.hidden = true;
+    }
+
+    clearStatus() {
+        if (!this.#popoverRefs) return;
+        this.#popoverRefs.statusBox.hidden = true;
+        this.#popoverRefs.listbox.hidden = false;
+    }
+
+    /** @param {string} q */
+    setQueryInputValue(q) {
+        if (this.#popoverRefs) this.#popoverRefs.searchInput.value = q;
+    }
+
+    focusSearch() {
+        this.#popoverRefs?.searchInput.focus();
+    }
+
+    focusListbox() {
+        this.#popoverRefs?.listbox.focus();
+    }
+
+    /** @returns {number} */
+    saveScrollLeft() {
+        return this.#popoverRefs?.listbox.scrollLeft ?? 0;
+    }
+
+    /** @param {number} x */
+    restoreScrollLeft(x) {
+        if (this.#popoverRefs) this.#popoverRefs.listbox.scrollLeft = x;
+    }
+
+    disposePopover() {
+        this.#popoverRefs?.popover.remove();
+        this.#popoverRefs = null;
+        this.#navOptions = [];
+        this.#activeItemId = null;
     }
 }
