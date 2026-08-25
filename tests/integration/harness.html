@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>harness</title>
+    <style>body{background:#09090b;padding:40px}#host{width:400px}</style>
+</head>
+<body>
+<div id="host"></div>
+<script type="module">
+    import CustomSelect from '/src/index.js';
+    import '/src/styles/index.css';
+
+    const params = new URLSearchParams(location.search);
+    const kase = params.get('case') ?? 'basic';
+
+    /** @returns {Array<any>} */
+    const baseItems = [
+        { id: 'a', type: 'text', content: 'Alpha' },
+        { id: 'b', type: 'text', content: 'Beta' },
+        { id: 'c', type: 'text', content: 'Gamma', disabled: true },
+        { id: 'd', type: 'text', content: 'Delta', group: 'G' },
+        { id: 'e', type: 'text', content: 'Epsilon', group: 'G' },
+    ];
+
+    /** @type {Record<string, any>} */
+    const cases = {
+        basic: { items: baseItems },
+        single: { items: baseItems, selectedIds: ['a'] },
+        multi: { items: baseItems, multiple: true, selectedIds: ['a'], showSelectAll: true, showClearAll: true, maxLines: 1 },
+        search: { items: baseItems, highlightSearchMatches: true },
+        columns: { items: Array.from({ length: 30 }, (_, i) => ({ id: i, type: 'text', content: `Opt ${i}` })), columns: 3, modalMaxHeight: 180 },
+        readonly: { items: baseItems, readonly: true },
+        loading: { items: baseItems, loading: true },
+        disabled: { items: baseItems, disabled: true },
+        events: { items: baseItems, multiple: true },
+        overflowBottom: { items: baseItems },
+    };
+
+    if (kase === 'overflowBottom') {
+        const spacer = document.createElement('div');
+        spacer.style.height = 'calc(100vh - 120px)';
+        document.body.prepend(spacer);
+    }
+
+    window.__select = new CustomSelect(document.getElementById('host'), cases[kase] ?? cases.basic, {
+        onSelect: (item) => window.dispatchEvent(new CustomEvent('csel-select', { detail: item.id })),
+        onDeselect: (item) => window.dispatchEvent(new CustomEvent('csel-deselect', { detail: item.id })),
+        onChange: (items) => window.dispatchEvent(new CustomEvent('csel-change', { detail: items.map((i) => i.id) })),
+        onOpen: () => window.dispatchEvent(new CustomEvent('csel-open')),
+        onClose: () => window.dispatchEvent(new CustomEvent('csel-close')),
+        onSearch: (q, matched) => window.dispatchEvent(new CustomEvent('csel-search', { detail: { q, n: matched.length } })),
+        onClear: () => window.dispatchEvent(new CustomEvent('csel-clear')),
+    });
+
+    window.__api = window.__select;
+</script>
+</body>
+</html>
