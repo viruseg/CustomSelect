@@ -1,6 +1,6 @@
 @media (prefers-reduced-motion: no-preference) {
     .csel-popover[data-csel-anim='true']:popover-open {
-        animation: csel-pop-in var(--csel-transition) ease-out;
+        animation: csel-pop-in var(--csel-transition);
     }
 }
 
