@@ -280,6 +280,21 @@ export default class CustomSelect {
             else void this.toggle();
         };
 
+        /** Средняя кнопка на теге — снятие выбора, как у кнопки «×» (спека: как remove). */
+        const onTagAuxClick = (/** @type {MouseEvent} */ e) => {
+            const t = e.target instanceof Element ? e.target.closest('.csel-tag') : null;
+            if (!t || e.button !== 1) return;
+            e.preventDefault();
+            const idRef = /** @type {HTMLElement} */ (t).dataset.id;
+            void this.#uiRemoveTag(/** @type {string} */ (idRef));
+        };
+        // подавляем нативный autoscroll-режим средней кнопки
+        const onTagMouseDown = (/** @type {MouseEvent} */ e) => {
+            if (e.button !== 1) return;
+            const t = e.target instanceof Element ? e.target.closest('.csel-tag') : null;
+            if (t) e.preventDefault();
+        };
+
         /** @param {KeyboardEvent} e */
         const onKeyDown = (e) => {
             const c = this.#cfg();
@@ -321,9 +336,13 @@ export default class CustomSelect {
 
         els.root.addEventListener('click', /** @type {EventListener} */ (onClick));
         els.root.addEventListener('keydown', /** @type {EventListener} */ (onKeyDown));
+        els.root.addEventListener('auxclick', /** @type {EventListener} */ (onTagAuxClick));
+        els.root.addEventListener('mousedown', /** @type {EventListener} */ (onTagMouseDown));
         this.#disposables.push(() => {
             els.root.removeEventListener('click', /** @type {EventListener} */ (onClick));
             els.root.removeEventListener('keydown', /** @type {EventListener} */ (onKeyDown));
+            els.root.removeEventListener('auxclick', /** @type {EventListener} */ (onTagAuxClick));
+            els.root.removeEventListener('mousedown', /** @type {EventListener} */ (onTagMouseDown));
         });
     }
 

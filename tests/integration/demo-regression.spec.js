@@ -311,6 +311,26 @@ test.describe('regression: constant height with maxLines', () => {
     });
 });
 
+test.describe('regression: middle-click deselects tag', () => {
+    test('aux-click on selected pill removes it like the × button', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=multiMax2');
+        await page.waitForFunction(() => Boolean(window.__select));
+        await page.evaluate(() => window.__api.setValue([0, 1]));
+
+        const before = await page.evaluate(() => window.__api.getValue().map((i) => i.id));
+        expect(before).toEqual([0, 1]);
+
+        // средняя кнопка по первому тегу
+        await page.locator('.csel-root .csel-tag').first().click({ button: 'middle' });
+        await page.waitForTimeout(150);
+
+        const after = await page.evaluate(() => window.__api.getValue().map((i) => i.id));
+        expect(after).toEqual([1]);
+        // popover не открывался
+        await expect(page.locator('.csel-popover')).not.toBeVisible();
+    });
+});
+
 test.describe('regression: more-button fills its line', () => {
     test('«...» matches pill height and is vertically centered on the line', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=overflowMulti');
