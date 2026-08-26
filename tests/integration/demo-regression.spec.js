@@ -64,6 +64,35 @@ test.describe('regression: multiple placeholder visibility', () => {
     });
 });
 
+test.describe('regression: group headers in multi-column flow', () => {
+    test('headers are not clumped: each sits before its own group', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=columns');
+        await page.waitForFunction(() => Boolean(window.__select));
+        await page.locator('.csel-root').click();
+        await page.waitForSelector('.csel-popover:popover-open');
+        await page.waitForTimeout(200);
+
+        const g = await page.evaluate(() => {
+            const lb = document.querySelector('.csel-listbox');
+            const pop = document.querySelector('.csel-popover').getBoundingClientRect();
+            const rects = [...lb.querySelectorAll('.csel-group-header')].map((h) => h.getBoundingClientRect());
+            return {
+                count: rects.length,
+                a: rects[0] ? { x: Math.round(rects[0].x), y: Math.round(rects[0].y) } : null,
+                b: rects[1] ? { x: Math.round(rects[1].x), y: Math.round(rects[1].y) } : null,
+                popLeft: pop.x,
+            };
+        });
+        expect(g.count).toBe(2);
+        // заголовки не должны улетать за левый край видимой области
+        expect(g.a.x).toBeGreaterThanOrEqual(g.popLeft - 1);
+        // и не должны идти сплошняком друг под другом в одной колонке без опций между ними:
+        // либо разнесены по вертикали минимум на 2 строки, либо в разных колонках
+        const separated = g.b.y - g.a.y >= 60 || g.b.x - g.a.x > 80;
+        expect(separated).toBe(true);
+    });
+});
+
 test.describe('regression: scrollbar styling and horizontal snap', () => {
     test('listbox uses thin themed scrollbar', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=tallSingle');

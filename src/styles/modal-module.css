@@ -208,3 +208,7 @@
 .csel-listbox--grid { scroll-snap-type: x mandatory; }
 .csel-listbox--grid .csel-option { scroll-snap-align: start; }
 .csel-listbox--grid .csel-group-header { scroll-snap-align: none; }
+/* В сетке заголовок — обычная ячейка потока перед своей группой.
+   Базовый grid-column:1/-1 (на всю ширину) внутри auto-flow:column
+   выбивает автозаполнение и схлопывает заголовки в кучу. */
+.csel-listbox--grid .csel-group-header { grid-column: auto; }
