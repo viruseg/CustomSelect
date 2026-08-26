@@ -155,6 +155,22 @@ export function unmountFilter() {
 
 После `destroy()` обращение к методам экземпляра бросает `Error` — держите ссылку актуальной.
 
+## Получение инстанса по DOM-узлу
+
+```js
+// где-то в обработчике событий или при динамическом создании
+const host = document.querySelector('#my-select');
+const select = CustomSelect.getInstance(host);
+
+if (select) {
+    await select.setValue([3]);
+} else {
+    // инстанс не найден или уже уничтожен
+}
+```
+
+`getInstance` возвращает `null` если для элемента не был создан инстанс или он уже уничтожен — безопасно использовать без try/catch.
+
 ## Тонкая настройка темы под бренд
 
 ```css

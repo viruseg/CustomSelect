@@ -15,6 +15,9 @@ import { search } from './SearchEngine.js';
  * @typedef {import('../types.js').SimpleRect} SimpleRect
  */
 
+/** @type {WeakMap<HTMLElement, CustomSelect>} */
+const instanceMap = new WeakMap();
+
 const EVENT_ALIASES = /** @type {const} */ ({
     onSelect: 'select',
     onDeselect: 'deselect',
@@ -97,6 +100,7 @@ export default class CustomSelect {
             throw new TypeError('Invalid target: expected HTMLElement or selector string.');
         }
         this.#target = el;
+        instanceMap.set(el, this);
 
         const items = validateItems(config?.items ?? []);
         this.#instanceId = nextInstanceId();
@@ -1171,9 +1175,24 @@ export default class CustomSelect {
         }
     }
 
+    /**
+     * Returns the CustomSelect instance bound to the given DOM node, or null
+     * if no active instance exists for that element (never created, already
+     * destroyed, or not a target element).
+     *
+     * @param {HTMLElement} node
+     * @returns {CustomSelect|null}
+     */
+    static getInstance(node) {
+        if (!(node instanceof HTMLElement)) return null;
+        const inst = instanceMap.get(node);
+        return inst ?? null;
+    }
+
     destroy() {
         if (this.#destroyed) throw new Error('CustomSelect instance has already been destroyed.');
         this.#destroyed = true;
+        instanceMap.delete(this.#target);
         this.#deactivateListeners();
         if (this.#resizeObserver) {
             this.#resizeObserver.disconnect();

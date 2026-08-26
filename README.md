@@ -165,6 +165,7 @@ select.on('change', (instance, items) => { /* ... */ });
 
 | Метод | Описание |
 |---|---|
+| `CustomSelect.getInstance(node)` | Статический: получить инстанс по DOM-узлу или `null` |
 | `open()` / `close()` / `toggle()` | Управление списком (async) |
 | `getValue()` | Текущий выбор — массив items |
 | `getPopover()` | DOM-элемент popover'а (для интеграции с оверлей-системами) |

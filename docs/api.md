@@ -28,6 +28,30 @@ const select = new CustomSelect('#host', { items }, {
 });
 ```
 
+## Статические методы
+
+### getInstance(node)
+
+```js
+const instance = CustomSelect.getInstance(domElement); // CustomSelect | null
+```
+
+Возвращает инстанс `CustomSelect`, привязанный к указанному DOM-элементу, или `null`, если:
+
+- передан не `HTMLElement`;
+- для данного элемента инстанс не был создан;
+- инстанс уже уничтожен через `destroy()`.
+
+```js
+const host = document.querySelector('#my-select');
+const select = CustomSelect.getInstance(host);
+if (select) {
+    await select.setValue([3]);
+}
+```
+
+Используется для получения инстанса по DOM-узлу, например, внутри обработчиков событий или при работе с динамически создаваемыми компонентами.
+
 ## Управление списком
 
 ### open() / close() / toggle()
