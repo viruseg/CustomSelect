@@ -349,7 +349,10 @@
 }
 @keyframes csel-spin { to { transform: rotate(360deg); } }
 
-/* all:unset стирает UA-правило [hidden]{display:none} — восстанавливаем явно */
+/* all:unset стирает UA-правило [hidden]{display:none} — восстанавливаем явно.
+   .csel-search-header добавлен отдельно: его авторский display:flex перебивает
+   UA-правило [hidden] даже без all:unset (авторские стили сильнее UA в каскаде). */
+.csel-search-header[hidden],
 .csel-search-clear[hidden],
 .csel-select-all[hidden],
 .csel-clear-all[hidden] { display: none; }

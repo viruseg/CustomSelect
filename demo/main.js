@@ -32,7 +32,7 @@ function section(title) {
     const box = section('Single / image');
     const host = document.createElement('div');
     box.append(host);
-    new CustomSelect(host, { items: makeImages(), searchable: true });
+    new CustomSelect(host, { items: makeImages(), searchable: false });
 }
 
 // Multiple with tags/maxLines/clear/selectAll

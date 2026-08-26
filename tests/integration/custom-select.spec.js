@@ -128,6 +128,30 @@ test.describe('search', () => {
         await page.locator('.csel-search-input').fill('');
         await expect(option(page, 'e')).toBeVisible();
     });
+
+    test('searchable:false fully hides search header and disables search events', async ({ page }) => {
+        await open(page, 'singleImage');
+        await root(page).click();
+        await expect(popover(page)).toBeVisible();
+
+        // Заголовок поиска скрыт на уровне каскада, а не только атрибутом hidden.
+        const headerDisplay = await page.$eval(
+            '.csel-search-header',
+            (el) => getComputedStyle(el).display,
+        );
+        expect(headerDisplay).toBe('none');
+
+        // Даже принудительный ввод не фильтрует список и не эмитит 'search'.
+        await page.evaluate(() => {
+            window.__evts = [];
+            window.addEventListener('csel-search', () => window.__evts.push('csel-search'));
+            const input = document.querySelector('.csel-search-input');
+            input.value = 'zzz';
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+        await expect(page.locator('.csel-empty')).toHaveCount(0);
+        expect(await page.evaluate(() => window.__evts)).toEqual([]);
+    });
 });
 
 test.describe('keyboard', () => {

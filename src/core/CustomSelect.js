@@ -350,9 +350,19 @@ export default class CustomSelect {
     #wirePopoverEvents() {
         const refs = this.#renderer.ensurePopover(this.#cfg());
 
-        const onSearchInput = () => void this.#onQueryChanged(refs.searchInput.value);
+        // searchable:false: обработчики остаются навешенными, но guard делает их
+        // no-op — устойчиво к динамическому updateConfig({searchable}) в рантайме.
+        const searchEnabled = () => this.#cfg().searchable === true;
 
+        /** @returns {void} */
+        const onSearchInput = () => {
+            if (!searchEnabled()) return;
+            void this.#onQueryChanged(refs.searchInput.value);
+        };
+
+        /** @returns {void} */
         const onSearchClear = () => {
+            if (!searchEnabled()) return;
             refs.searchInput.value = '';
             void this.#onQueryChanged('');
         };
