@@ -95,6 +95,10 @@
 
 .csel-more {
     all: unset;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(var(--csel-line-height) - 6px); /* высота линии = высота тега */
     cursor: pointer;
     padding: 0 6px;
     color: var(--csel-text-muted);

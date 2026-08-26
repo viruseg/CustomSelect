@@ -311,6 +311,31 @@ test.describe('regression: constant height with maxLines', () => {
     });
 });
 
+test.describe('regression: more-button fills its line', () => {
+    test('«...» matches pill height and is vertically centered on the line', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=overflowMulti');
+        await page.waitForFunction(() => Boolean(window.__select));
+        await page.evaluate(() => window.__api.selectAll());
+        await page.waitForTimeout(200);
+
+        const m = await page.evaluate(() => {
+            const root = document.querySelector('.csel-root');
+            const more = root.querySelector('.csel-more').getBoundingClientRect();
+            const pill = [...root.querySelectorAll('.csel-tag')]
+                .find((p) => getComputedStyle(p).display !== 'none')
+                .getBoundingClientRect();
+            return {
+                moreH: Math.round(more.height),
+                pillH: Math.round(pill.height),
+                // центр кнопки против центра пилюли той же линии
+                centerDelta: Math.abs((more.y + more.height / 2) - (pill.y + pill.height / 2)),
+            };
+        });
+        expect(Math.abs(m.moreH - m.pillH)).toBeLessThanOrEqual(1);
+        expect(m.centerDelta).toBeLessThanOrEqual(1.5);
+    });
+});
+
 test.describe('regression: maxLines overflow hides pills and keeps them inside', () => {
     test('select-all overflow: extra pills hidden, visible ones stay within reserved lines', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=overflowMulti');
