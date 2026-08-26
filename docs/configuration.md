@@ -54,7 +54,7 @@ new CustomSelect(target, config, events?)
 
 | Опция | Тип | По умолчанию | Описание |
 |---|---|---|---|
-| `showClearAll` | `boolean` | `true` | Кнопка × очистки в триггере + «Clear all» в popover (multiple). Видима только при непустом выборе |
+| `showClearAll` | `boolean` | `true` | Кнопка × очистки в триггере + «Clear all» в popover. Только multiple; видима при непустом выборе |
 | `showSelectAll` | `boolean` | `false` | Кнопка «Select all» (multiple). При активном поиске выбирает только найденные enabled-элементы |
 
 ### Состояния
