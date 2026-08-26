@@ -116,6 +116,40 @@ test.describe('selection', () => {
     });
 });
 
+test.describe('public API: getItems & getSelectedIds', () => {
+    test('getItems returns deep copy of all items', async ({ page }) => {
+        await open(page, 'multi');
+        const result = await page.evaluate(() => {
+            const items = window.__api.getItems();
+            items.push({ id: 'fake', type: 'text', content: 'Fake' });
+            items[0].content = 'MUTATED';
+            return { returnedCount: items.length, originalCount: window.__api.getItems().length };
+        });
+        expect(result.originalCount).toBe(5);
+        expect(result.returnedCount).toBe(6);
+        const original = await page.evaluate(() => window.__api.getItems()[0].content);
+        expect(original).toBe('Alpha');
+    });
+
+    test('getSelectedIds returns empty array when nothing selected', async ({ page }) => {
+        await open(page, 'basic');
+        const ids = await page.evaluate(() => window.__api.getSelectedIds());
+        expect(ids).toEqual([]);
+    });
+
+    test('getSelectedIds returns selected IDs in multi mode', async ({ page }) => {
+        await open(page, 'multi');
+        const ids = await page.evaluate(() => window.__api.getSelectedIds());
+        expect(ids).toEqual(['a']);
+    });
+
+    test('getSelectedIds returns array with single ID in single mode', async ({ page }) => {
+        await open(page, 'single');
+        const ids = await page.evaluate(() => window.__api.getSelectedIds());
+        expect(ids).toEqual(['a']);
+    });
+});
+
 test.describe('search', () => {
     test('filters list, highlights matches, fires onSearch, empty state text', async ({ page }) => {
         await open(page, 'search');

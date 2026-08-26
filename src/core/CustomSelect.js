@@ -979,6 +979,25 @@ export default class CustomSelect {
         return this.#state.getSelectedItems();
     }
 
+    /**
+     * Returns a deep copy of all items. Mutations to the returned array or its
+     * elements do not affect the component's internal state.
+     * @returns {CustomSelectItem[]}
+     */
+    getItems() {
+        this.#assertAlive();
+        return structuredClone(this.#state.getItems());
+    }
+
+    /**
+     * Returns IDs of all selected items. Empty array when nothing is selected.
+     * @returns {(string|number)[]}
+     */
+    getSelectedIds() {
+        this.#assertAlive();
+        return this.#state.getSelectedIds();
+    }
+
     /** @param {string} event @param {Function} handler */
     on(event, handler) {
         this.#assertAlive();
