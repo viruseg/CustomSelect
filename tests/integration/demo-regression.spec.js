@@ -273,6 +273,40 @@ test.describe('regression: constant height with maxLines', () => {
     });
 });
 
+test.describe('regression: maxLines overflow hides pills and keeps them inside', () => {
+    test('select-all overflow: extra pills hidden, visible ones stay within reserved lines', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=overflowMulti');
+        await page.waitForFunction(() => Boolean(window.__select));
+        await page.evaluate(() => window.__api.selectAll());
+        await page.waitForTimeout(200);
+
+        const m = await page.evaluate(() => {
+            const root = document.querySelector('.csel-root');
+            const pills = [...root.querySelectorAll('.csel-tag')];
+            const lineH = 36;
+            const maxLines = 2;
+            const limitTop = lineH * maxLines;
+            const vis = pills
+                .filter((p) => getComputedStyle(p).display !== 'none')
+                .map((p) => ({ top: p.offsetTop, h: p.offsetHeight }));
+            return {
+                total: pills.length,
+                visible: vis.length,
+                moreShown: !root.querySelector('.csel-more').hidden,
+                minTop: Math.min(...vis.map((v) => v.top)),
+                worstBottom: Math.max(...vis.map((v) => v.top + v.h)),
+            };
+        });
+
+        expect(m.total).toBeGreaterThan(m.visible);
+        expect(m.moreShown).toBe(true);
+        // ни одна видимая пилюля не начинается выше области (нет center-выброса вверх)
+        expect(m.minTop).toBeGreaterThanOrEqual(-1);
+        // все видимые пилюли укладываются в зарезервированные maxLines строк
+        expect(m.worstBottom).toBeLessThanOrEqual(36 * 2 + 2);
+    });
+});
+
 test.describe('regression: mouse wheel scrolls columns horizontally', () => {
     test('vertical wheel translates to horizontal column scrolling', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=columns');

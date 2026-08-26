@@ -32,6 +32,12 @@
         columns: { items: Array.from({ length: 30 }, (_, i) => ({ id: i, type: 'text', content: `Opt ${i}`, group: i < 15 ? 'A' : 'B' })), columns: 3, modalMaxHeight: 180 },
         tallSingle: { items: Array.from({ length: 30 }, (_, i) => ({ id: i, type: 'text', content: `Opt ${i}` })), modalMaxHeight: 180 },
         multiMax2: { items: Array.from({ length: 12 }, (_, i) => ({ id: i, type: 'text', content: `Item ${i}` })), multiple: true, maxLines: 2 },
+        overflowMulti: {
+            items: Array.from({ length: 22 }, (_, i) => ({ id: i, type: 'text', content: `Fruit ${String(i + 1).padStart(2, '0')}` })),
+            multiple: true,
+            maxLines: 2,
+            showSelectAll: true,
+        },
         readonly: { items: baseItems, readonly: true },
         loading: { items: baseItems, loading: true },
         disabled: { items: baseItems, disabled: true },
