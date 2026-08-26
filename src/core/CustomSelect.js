@@ -378,6 +378,24 @@ export default class CustomSelect {
         refs.listbox.addEventListener('click', onListClick);
         refs.popover.addEventListener('keydown', /** @type {EventListener} */ (onPopoverKeyDown));
 
+        /**
+         * Колесо над многоколоночным списком прокручивает колонки.
+         * overflow-y:hidden лишает браузер вертикального канала, трансляция
+         * deltaY даёт лишь микроподвижки, которые mandatory-snap откатывает —
+         * поэтому транслируем явно в scrollLeft (программный скролл снапится
+         * вперёд, к ближайшей колонке).
+         * @param {WheelEvent} e
+         */
+        const onListWheel = (e) => {
+            const lb = refs.listbox;
+            if (!lb.classList.contains('csel-listbox--grid')) return;
+            const d = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+            if (!d || lb.scrollWidth <= lb.clientWidth + 1) return;
+            e.preventDefault();
+            lb.scrollLeft += d;
+        };
+        refs.listbox.addEventListener('wheel', onListWheel, { passive: false });
+
         // Перманентный сторож внешнего light-dismiss (спека §11): ancestor display:none,
         // сторонний hidePopover и т.п. не проходят через close() — сверяемся через обычный
         // путь закрытия, иначе #openState навсегда остаётся 'open' и очередь переходов
@@ -398,6 +416,7 @@ export default class CustomSelect {
             refs.selectAllButton.removeEventListener('click', onSelectAllClick);
             refs.clearAllButton.removeEventListener('click', onClearAllClick);
             refs.listbox.removeEventListener('click', onListClick);
+            refs.listbox.removeEventListener('wheel', onListWheel);
             refs.popover.removeEventListener('keydown', /** @type {EventListener} */ (onPopoverKeyDown));
             refs.popover.removeEventListener('toggle', onExternalClose);
         });

@@ -177,6 +177,25 @@ test.describe('regression: scrollbar styling and horizontal snap', () => {
     });
 });
 
+test.describe('regression: mouse wheel scrolls columns horizontally', () => {
+    test('vertical wheel translates to horizontal column scrolling', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=columns');
+        await page.waitForFunction(() => Boolean(window.__select));
+        await page.locator('.csel-root').click();
+        await page.waitForSelector('.csel-popover:popover-open');
+
+        // реалистичный паттерн: короткие щелчки колеса (не одна большая дельта)
+        await page.locator('.csel-listbox').hover();
+        for (let i = 0; i < 3; i++) {
+            await page.mouse.wheel(0, 120);
+            await page.waitForTimeout(180);
+        }
+
+        const sl = await page.evaluate(() => document.querySelector('.csel-listbox').scrollLeft);
+        expect(sl).toBeGreaterThan(80); // минимум одна колонка
+    });
+});
+
 test.describe('regression: placeholder left alignment', () => {
     for (const kase of ['multi', 'basic']) {
         test(`empty state: placeholder sits at content left edge (${kase})`, async ({ page }) => {
