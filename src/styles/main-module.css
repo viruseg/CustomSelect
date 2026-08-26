@@ -109,3 +109,7 @@
 .csel-chevron { transition: transform var(--csel-transition); }
 
 .csel-img { max-height: calc(var(--csel-line-height) - 12px); max-width: 100%; object-fit: contain; }
+
+/* all:unset стирает UA-правило [hidden]{display:none} — восстанавливаем явно */
+.csel-more[hidden],
+.csel-clear[hidden] { display: none; }

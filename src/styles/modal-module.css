@@ -157,3 +157,8 @@
     animation: csel-spin 0.7s linear infinite;
 }
 @keyframes csel-spin { to { transform: rotate(360deg); } }
+
+/* all:unset стирает UA-правило [hidden]{display:none} — восстанавливаем явно */
+.csel-search-clear[hidden],
+.csel-select-all[hidden],
+.csel-clear-all[hidden] { display: none; }
