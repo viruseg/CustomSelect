@@ -1,14 +1,31 @@
 /** @returns {import('../types.js').CustomSelectItem[]} */
 export function makeFruits() {
     return [
+        // Fruits
         { id: 'apple', type: 'text', content: 'Apple', group: 'Fruits' },
         { id: 'apricot', type: 'text', content: 'Apricot', group: 'Fruits' },
         { id: 'banana', type: 'text', content: 'Banana', group: 'Fruits' },
+        { id: 'cherry', type: 'text', content: 'Cherry', group: 'Fruits' },
+        { id: 'grape', type: 'text', content: 'Grape', group: 'Fruits' },
+        { id: 'kiwi', type: 'text', content: 'Kiwi', group: 'Fruits' },
+        { id: 'lemon', type: 'text', content: 'Lemon', group: 'Fruits' },
+        { id: 'mango', type: 'text', content: 'Mango', group: 'Fruits' },
+        { id: 'orange', type: 'text', content: 'Orange', group: 'Fruits' },
+        { id: 'peach', type: 'text', content: 'Peach', group: 'Fruits' },
+        { id: 'pineapple', type: 'text', content: 'Pineapple', group: 'Fruits' },
+        // Vegetables
         { id: 'carrot', type: 'text', content: 'Carrot', group: 'Vegetables' },
         { id: 'potato', type: 'text', content: 'Potato', disabled: true, group: 'Vegetables' },
         { id: 'tomato', type: 'text', content: 'Tomato', group: 'Vegetables' },
+        { id: 'cucumber', type: 'text', content: 'Cucumber', group: 'Vegetables' },
+        { id: 'onion', type: 'text', content: 'Onion', group: 'Vegetables' },
+        { id: 'pepper', type: 'text', content: 'Pepper', group: 'Vegetables' },
+        { id: 'radish', type: 'text', content: 'Radish', group: 'Vegetables' },
+        { id: 'zucchini', type: 'text', content: 'Zucchini', group: 'Vegetables' },
+        // Transport (search keywords)
         { id: 'red-car', type: 'text', content: 'Red Car', searchKeywords: ['vehicle', 'auto'] },
         { id: 'blue-bus', type: 'text', content: 'Blue Bus', searchKeywords: ['vehicle'] },
+        { id: 'tram', type: 'text', content: 'City Tram', searchKeywords: ['vehicle', 'public'] },
     ];
 }
 
