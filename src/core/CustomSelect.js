@@ -270,7 +270,11 @@ export default class CustomSelect {
                 return;
             }
             this.#openIntent = 'pointer';
-            void this.open();
+            // Значение/тег: семантика спеки §22 — открыть (без закрытия).
+            // Плейсхолдер и пустое место: переключить открытие/закрытие.
+            const onValue = t.closest('.csel-tag') || t.closest('.csel-value-text');
+            if (onValue) void this.open();
+            else void this.toggle();
         };
 
         /** @param {KeyboardEvent} e */

@@ -64,6 +64,39 @@ test.describe('regression: multiple placeholder visibility', () => {
     });
 });
 
+test.describe('regression: click on empty area toggles popover', () => {
+    test('placeholder and empty space toggle open/closed', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=basic');
+        await page.waitForFunction(() => Boolean(window.__select));
+        const pop = page.locator('.csel-popover');
+
+        // открыли кликом по пустому месту
+        await page.locator('.csel-root').click();
+        await expect(pop).toBeVisible();
+
+        // клик по плейсхолдеру закрывает
+        await page.locator('.csel-root .csel-placeholder').click();
+        await expect(pop).not.toBeVisible();
+
+        // повторный клик по пустому месту снова открывает
+        await page.locator('.csel-value-area').click({ position: { x: 5, y: 5 } });
+        await expect(pop).toBeVisible();
+    });
+
+    test('click on selected value keeps popover open (spec §22)', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=single');
+        await page.waitForFunction(() => Boolean(window.__select));
+        const pop = page.locator('.csel-popover');
+
+        // single уже со значением: первый клик по нему открывает
+        await page.locator('.csel-root .csel-value-text').click();
+        await expect(pop).toBeVisible();
+        // повторный клик по значению НЕ закрывает (семантика open)
+        await page.locator('.csel-root .csel-value-text').click();
+        await expect(pop).toBeVisible();
+    });
+});
+
 test.describe('regression: group headers in multi-column flow', () => {
     test('headers are not clumped: each sits before its own group', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=columns');
