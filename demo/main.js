@@ -1,5 +1,5 @@
-import '../styles/index.css';
-import CustomSelect from '../core/CustomSelect.js';
+import '../src/styles/index.css';
+import CustomSelect from '../src/core/CustomSelect.js';
 import { makeFruits, makeImages, makeMany } from './data.js';
 
 /** @param {string} name */
