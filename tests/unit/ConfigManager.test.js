@@ -4,7 +4,9 @@ import ConfigManager, { DEFAULT_CONFIG, validateItems } from '../../src/core/Con
 describe('DEFAULT_CONFIG', () => {
     it('matches spec defaults', () => {
         expect(DEFAULT_CONFIG.multiple).toBe(false);
-        expect(DEFAULT_CONFIG.placeholder).toBe('Выберите значение...');
+        expect(DEFAULT_CONFIG.placeholder).toBe('Select a value...');
+        expect(DEFAULT_CONFIG.emptySearchText).toBe('No matches found');
+        expect(DEFAULT_CONFIG.emptyListText).toBe('No items available');
         expect(DEFAULT_CONFIG.lineHeight).toBe(36);
         expect(DEFAULT_CONFIG.modalMaxHeight).toBe(320);
         expect(DEFAULT_CONFIG.modalOffset).toBe(4);

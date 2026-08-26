@@ -87,7 +87,7 @@ npm install git+https://example.com/user/custom-select.git
 ```text
 <div popover="manual" class="csel-popover">
     ├── поиск                              ← searchable=true
-    ├── «Выбрать всё» / «Снять всё»         ← batch actions
+    ├── 'Select all' / 'Clear all'         ← batch actions
     └── listbox с опциями и группами
 </div>
 ```

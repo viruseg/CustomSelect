@@ -98,7 +98,7 @@ const select = new CustomSelect('#tags', {
     multiple: true,
     selectedIds: ['a', 'b'],   // начальный выбор
     maxLines: 2,               // до 2 строк тегов, остальное скрывается за «...»
-    showSelectAll: true,       // кнопка «Выбрать всё»
+    showSelectAll: true,       // 'Select all' button
 });
 ```
 

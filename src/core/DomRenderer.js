@@ -123,7 +123,7 @@ export default class DomRenderer {
         clearButton.type = 'button';
         clearButton.className = 'csel-clear';
         clearButton.textContent = '×';
-        clearButton.setAttribute('aria-label', 'Очистить выбор');
+        clearButton.setAttribute('aria-label', 'Clear selection');
         clearButton.tabIndex = -1;
         clearButton.hidden = true;
 
@@ -210,7 +210,7 @@ export default class DomRenderer {
             remove.className = 'csel-tag-remove';
             remove.textContent = '×';
             remove.dataset.id = String(item.id);
-            remove.setAttribute('aria-label', `Удалить ${accessibleName(item)}`);
+            remove.setAttribute('aria-label', `Remove ${accessibleName(item)}`);
             remove.tabIndex = -1;
             this.#tagRemoveButtons.add(remove);
 
@@ -281,6 +281,7 @@ export default class DomRenderer {
         const searchInput = document.createElement('input');
         searchInput.type = 'search';
         searchInput.className = 'csel-search-input';
+        searchInput.placeholder = 'Search...';
         const searchClear = document.createElement('button');
         searchClear.type = 'button';
         searchClear.className = 'csel-search-clear';
@@ -294,12 +295,12 @@ export default class DomRenderer {
         const selectAllButton = document.createElement('button');
         selectAllButton.type = 'button';
         selectAllButton.className = 'csel-select-all';
-        selectAllButton.textContent = 'Выбрать всё';
+        selectAllButton.textContent = 'Select all';
         selectAllButton.tabIndex = -1;
         const clearAllButton = document.createElement('button');
         clearAllButton.type = 'button';
         clearAllButton.className = 'csel-clear-all';
-        clearAllButton.textContent = 'Снять всё';
+        clearAllButton.textContent = 'Clear all';
         clearAllButton.tabIndex = -1;
         batchBar.append(selectAllButton, clearAllButton);
 
@@ -552,7 +553,7 @@ export default class DomRenderer {
             const spinner = document.createElement('div');
             spinner.className = 'csel-spinner';
             spinner.setAttribute('role', 'status');
-            spinner.setAttribute('aria-label', 'Загрузка');
+            spinner.setAttribute('aria-label', 'Loading');
             statusBox.append(spinner);
         } else {
             const text = kind === 'empty-list' ? config.emptyListText : config.emptySearchText;

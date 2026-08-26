@@ -124,7 +124,7 @@ test.describe('search', () => {
         await expect(option(page, 'a')).toBeVisible();
         await expect(page.locator('.csel-hl')).toHaveText('Alp');
         await page.locator('.csel-search-input').fill('zzz');
-        await expect(page.locator('.csel-empty')).toHaveText('Ничего не найдено');
+        await expect(page.locator('.csel-empty')).toHaveText('No matches found');
         await page.locator('.csel-search-input').fill('');
         await expect(option(page, 'e')).toBeVisible();
     });

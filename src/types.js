@@ -24,7 +24,7 @@
  * @property {(string|number)[]} [selectedIds=[]]
  * @property {boolean} [multiple=false]
  *
- * @property {string} [placeholder='Выберите значение...']
+ * @property {string} [placeholder='Select a value...']
  *
  * @property {number} [maxLines=1]
  * @property {number} [lineHeight=36]
@@ -41,8 +41,8 @@
  * @property {boolean} [searchable=true]
  * @property {SearchMode} [searchMode='contains']
  * @property {boolean} [searchCaseSensitive=false]
- * @property {string} [emptySearchText='Ничего не найдено']
- * @property {string} [emptyListText='Нет доступных элементов']
+ * @property {string} [emptySearchText='No matches found']
+ * @property {string} [emptyListText='No items available']
  *
  * @property {boolean} [showClearAll=true]
  * @property {boolean} [showSelectAll=false]

@@ -20,7 +20,7 @@ new CustomSelect(target, config, events?)
 
 | Опция | Тип | По умолчанию | Описание |
 |---|---|---|---|
-| `placeholder` | `string` | `'Выберите значение...'` | Текст, когда ничего не выбрано |
+| `placeholder` | `string` | `'Select a value...'` | Текст, когда ничего не выбрано |
 | `maxLines` | `number` | `1` | Максимум строк тегов (только multiple). Переполнение скрывается за кнопкой «...» |
 | `lineHeight` | `number` | `36` | Базовая высота строки в px: определяет высоту триггера, тегов **и каждой опции списка** (высота опции фиксирована, длинный текст обрезается `...`) |
 | `mainWidth` | `number \| string` | `'100%'` | Ширина основного модуля |
@@ -47,15 +47,15 @@ new CustomSelect(target, config, events?)
 | `searchable` | `boolean` | `true` | Показывать поле поиска |
 | `searchMode` | `'contains' \| 'startsWith' \| 'exact' \| 'fuzzy'` | `'contains'` | Режим сопоставления (см. [search.md](search.md)) |
 | `searchCaseSensitive` | `boolean` | `false` | Учитывать регистр (NFKC-нормализация применяется всегда) |
-| `emptySearchText` | `string` | `'Ничего не найдено'` | Текст, когда запрос не дал результатов |
+| `emptySearchText` | `string` | `'No matches found'` | Текст, когда запрос не дал результатов |
 | `emptyListText` | `string` | `'Нет доступных элементов'` | Текст, когда items пуст или все disabled |
 
 ### Массовые действия
 
 | Опция | Тип | По умолчанию | Описание |
 |---|---|---|---|
-| `showClearAll` | `boolean` | `true` | Кнопка × очистки в триггере + «Снять всё» в popover (multiple). Видима только при непустом выборе |
-| `showSelectAll` | `boolean` | `false` | Кнопка «Выбрать всё» (multiple). При активном поиске выбирает только найденные enabled-элементы |
+| `showClearAll` | `boolean` | `true` | Кнопка × очистки в триггере + «Clear all» в popover (multiple). Видима только при непустом выборе |
+| `showSelectAll` | `boolean` | `false` | Кнопка «Select all» (multiple). При активном поиске выбирает только найденные enabled-элементы |
 
 ### Состояния
 
