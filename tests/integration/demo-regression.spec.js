@@ -178,25 +178,32 @@ test.describe('regression: scrollbar styling and horizontal snap', () => {
 });
 
 test.describe('regression: tag aligned top-left with maxLines>1', () => {
-    test('single selected tag sits at top-left of the reserved area', async ({ page }) => {
+    test('first tag position is pixel-stable at any fill level', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=multiMax2');
         await page.waitForFunction(() => Boolean(window.__select));
-        await page.evaluate(() => window.__api.setValue([0]));
 
-        const m = await page.evaluate(() => {
+        const metrics = () => page.evaluate(() => {
             const root = document.querySelector('.csel-root');
-            const tag = root.querySelector('.csel-tag');
             const rr = root.getBoundingClientRect();
+            const tag = root.querySelector('.csel-tag');
             const tr = tag.getBoundingClientRect();
-            return { dx: tr.x - rr.x, tagCy: tr.y + tr.height / 2 };
+            return { dx: tr.x - rr.x, dy: tr.y - rr.y };
         });
-        expect(m.dx).toBeLessThanOrEqual(12);
-        // тег центрирован по вертикали в зарезервированной области
-        const area = await page.evaluate(() => {
-            const a = document.querySelector('.csel-value-area').getBoundingClientRect();
-            return a.y + a.height / 2;
-        });
-        expect(Math.abs(m.tagCy - area)).toBeLessThanOrEqual(4);
+
+        // одна строка
+        await page.evaluate(() => window.__api.setValue([0]));
+        await page.waitForTimeout(120);
+        const oneLine = await metrics();
+
+        // две строки
+        await page.evaluate(() => window.__api.setValue([0, 1, 2, 3, 4, 5]));
+        await page.waitForTimeout(120);
+        const twoLines = await metrics();
+
+        // левый край и верхний отступ первого тега идентичны пиксель-в-пиксель
+        expect(Math.abs(twoLines.dx - oneLine.dx)).toBeLessThanOrEqual(1);
+        expect(Math.abs(twoLines.dy - oneLine.dy)).toBeLessThanOrEqual(1);
+        expect(oneLine.dy).toBeGreaterThanOrEqual(0);
     });
 });
 

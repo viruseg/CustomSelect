@@ -148,13 +148,12 @@
 .csel-placeholder,
 .csel-root button { user-select: none; }
 
-/* multiple: блок тегов центрируется по вертикали, а при переполнении
-   безопасно прижимается к верху (иначе center выбрасывает половину строк
-   выше области и ломает отсечку maxLines) */
+/* multiple: первый тег всегда стоит на одном и том же месте у верхнего
+   левого края независимо от числа заполненных строк — никакого
+   вертикального центрирования (оно сдвигало бы первую строку) */
 .csel-root--multiple .csel-value-area {
     min-height: calc(var(--csel-line-height) * var(--csel-max-lines, 1));
-    align-content: center;
-    align-content: safe center;
+    align-content: flex-start;
     align-items: flex-start;
 }
 
