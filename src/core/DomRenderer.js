@@ -16,6 +16,7 @@ import { tokenize, highlightSegments } from './SearchEngine.js';
  * Ссылки на элементы основного компонента.
  * @typedef {Object} MainRefs
  * @property {HTMLDivElement} root
+ * @property {HTMLDivElement} valueArea
  * @property {HTMLSpanElement} valueText
  * @property {HTMLDivElement} tagsContainer
  * @property {HTMLButtonElement} moreButton
@@ -150,7 +151,7 @@ export default class DomRenderer {
         root.append(valueArea, clearButton, toggleButton);
         target.append(root);
 
-        this.#els = { root, valueText, tagsContainer, moreButton, placeholder, clearButton, toggleButton };
+        this.#els = { root, valueArea, valueText, tagsContainer, moreButton, placeholder, clearButton, toggleButton };
         return this.#els;
     }
 

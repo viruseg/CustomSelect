@@ -855,18 +855,20 @@ export default class CustomSelect {
      */
     #recalcTags() {
         const c = this.#cfg();
-        const { tagsContainer, moreButton } = this.#renderer.elements;
+        const { tagsContainer, valueArea, moreButton } = this.#renderer.elements;
         const pills = /** @type {HTMLElement[]} */ ([...tagsContainer.querySelectorAll(':scope > .csel-tag')]);
         if (!c.multiple || pills.length === 0) {
             this.#renderer.setMoreVisible(false);
             return;
         }
         moreButton.hidden = true;
-        tagsContainer.style.removeProperty('padding-right');
+            valueArea.style.removeProperty('padding-right');
 
         /** @param {number} reservePx */
         const measureCutoff = (reservePx) => {
-            tagsContainer.style.paddingRight = reservePx > 0 ? `${reservePx}px` : '0';
+            // Резерв горизонтали — на flex-контейнере value-area: у .csel-tags
+            // display:contents, его padding не влияет на раскладку пилюль.
+            valueArea.style.paddingRight = reservePx > 0 ? `${reservePx}px` : '0';
             const limitTop = (c.lineHeight ?? 36) * (c.maxLines ?? 1);
             let cutoff = pills.length;
             let anyBeyond = false;
