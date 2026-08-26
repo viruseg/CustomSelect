@@ -57,11 +57,11 @@
 <div id="host">
 └── .csel-root [role=group] [.csel-root--disabled|--readonly|--loading]
     ├── .csel-value-area
+    │   ├── .csel-placeholder            ← показывается при пустом выборе
     │   ├── .csel-value-text            ← single: выбранное значение
     │   ├── .csel-tags                  ← multiple
     │   │   └── .csel-tag > .csel-tag-content + .csel-tag-remove[data-id]
     │   └── .csel-more                  ← кнопка «...»
-    ├── .csel-placeholder
     ├── .csel-clear                     ← кнопка ×
     └── .csel-toggle > svg.csel-chevron
 

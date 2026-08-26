@@ -104,6 +104,10 @@ export default class DomRenderer {
         const tagsContainer = document.createElement('div');
         tagsContainer.className = 'csel-tags';
 
+        const placeholder = document.createElement('span');
+        placeholder.className = 'csel-placeholder';
+        placeholder.textContent = config.placeholder ?? '';
+
         const moreButton = document.createElement('button');
         moreButton.type = 'button';
         moreButton.className = 'csel-more';
@@ -111,11 +115,9 @@ export default class DomRenderer {
         moreButton.tabIndex = -1;
         moreButton.hidden = true;
 
-        valueArea.append(valueText, tagsContainer, moreButton);
-
-        const placeholder = document.createElement('span');
-        placeholder.className = 'csel-placeholder';
-        placeholder.textContent = config.placeholder ?? '';
+        // Плейсхолдер живёт внутри value-area первым ребёнком: иначе valueArea с flex:1
+        // выталкивает его к правому краю триггера.
+        valueArea.append(placeholder, valueText, tagsContainer, moreButton);
 
         const clearButton = document.createElement('button');
         clearButton.type = 'button';
@@ -145,7 +147,7 @@ export default class DomRenderer {
         chevron.append(path);
         toggleButton.append(chevron);
 
-        root.append(valueArea, placeholder, clearButton, toggleButton);
+        root.append(valueArea, clearButton, toggleButton);
         target.append(root);
 
         this.#els = { root, valueText, tagsContainer, moreButton, placeholder, clearButton, toggleButton };

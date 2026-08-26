@@ -64,6 +64,27 @@ test.describe('regression: multiple placeholder visibility', () => {
     });
 });
 
+test.describe('regression: placeholder left alignment', () => {
+    for (const kase of ['multi', 'basic']) {
+        test(`empty state: placeholder sits at content left edge (${kase})`, async ({ page }) => {
+            await page.goto(`/tests/integration/harness.html?case=${kase}`);
+            await page.waitForFunction(() => Boolean(window.__select));
+            if (kase === 'multi') {
+                // harness multi стартует с выбором — снимаем, чтобы показать плейсхолдер
+                await page.locator('.csel-root .csel-tag-remove').click();
+                await expect(page.locator('.csel-root .csel-placeholder')).toBeVisible();
+            }
+            const offset = await page.evaluate(() => {
+                const root = document.querySelector('.csel-root');
+                const ph = root.querySelector('.csel-placeholder');
+                return ph.getBoundingClientRect().x - root.getBoundingClientRect().x;
+            });
+            // левый край контента root = border 1px + padding-left 8px ≈ 9px
+            expect(offset).toBeLessThanOrEqual(12);
+        });
+    }
+});
+
 test.describe('regression: scroll semantics per column mode', () => {
     test('single column: vertical scrolling works, no horizontal scrollbar', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=tallSingle');
