@@ -22,8 +22,8 @@ npm install git+https://example.com/user/custom-select.git
 
 | Импорт | Что даёт |
 |---|---|
-| `custom-select` | Класс `CustomSelect` (default) + `VERSION` (named) |
-| `custom-select/index.css` | Все стили библиотеки |
+| `custom-select` | Класс `CustomSelect` (named) + `VERSION` |
+| `custom-select/index.css` | Все стили библиотеки (подключать через `<link>`) |
 
 ## Минимальный пример
 
@@ -32,6 +32,7 @@ npm install git+https://example.com/user/custom-select.git
 <html lang="ru">
 <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="/node_modules/custom-select/dist/index.css">
     <title>CustomSelect</title>
 </head>
 <body>
@@ -40,7 +41,6 @@ npm install git+https://example.com/user/custom-select.git
 
     <script type="module">
         import CustomSelect from 'custom-select';
-        import 'custom-select/index.css';
 
         const select = new CustomSelect('#city', {
             items: [

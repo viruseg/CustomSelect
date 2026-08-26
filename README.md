@@ -56,10 +56,15 @@ npm install git+https://example.com/user/custom-select.git
 ```js
 import CustomSelect from 'custom-select';            // класс
 import CustomSelect, { VERSION } from 'custom-select'; // + версия
-import 'custom-select/index.css';                    // стили (обязательно!)
 ```
 
-> **Стили обязательны.** Без `custom-select/index.css` компонент работает, но выглядит как неоформленный div.
+> **Стили обязательны.** Подключите их тегом в HTML:
+>
+> ```html
+> <link rel="stylesheet" href="node_modules/custom-select/dist/index.css">
+> ```
+>
+> Без стилей компонент работает, но выглядит как неоформленный div.
 
 ## Быстрый старт
 

@@ -1,4 +1,3 @@
-import '../src/styles/index.css';
 import CustomSelect from '../src/core/CustomSelect.js';
 import { makeFruits, makeImages, makeMany } from './data.js';
 
