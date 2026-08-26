@@ -6,11 +6,12 @@
 new CustomSelect(target, config?, events?)
 ```
 
-| Аргумент | Тип | Описание |
-|---|---|---|
-| `target` | `HTMLElement \| string` | Элемент-хост или CSS-селектор. Селектор должен соответствовать **ровно одному** элементу (0 → `Error`, >1 → `Error`). Библиотека строит UI внутри него; сам хост при `destroy()` не удаляется |
-| `config` | `CustomSelectConfig` | Конфигурация, см. [configuration.md](configuration.md) |
-| `events` | `SelectEvents` | Объект колбэков: `onSelect`, `onDeselect`, `onChange`, `onOpen`, `onClose`, `onSearch`, `onClear` |
+
+| Аргумент | Тип                 | Описание                                                                                                                                                                                                                                                                                                    |
+| ---------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `target`         | `HTMLElement | string` | Элемент-хост или CSS-селектор. Селектор должен соответствовать**ровно одному** элементу (0 → `Error`, >1 → `Error`). Библиотека строит UI внутри него; сам хост при `destroy()` не удаляется |
+| `config`         | `CustomSelectConfig`   | Конфигурация, см.[configuration.md](configuration.md)                                                                                                                                                                                                                                                 |
+| `events`         | `SelectEvents`         | Объект колбэков:`onSelect`, `onDeselect`, `onChange`, `onOpen`, `onClose`, `onSearch`, `onClear`                                                                                                                                                                                                      |
 
 Бросает:
 
@@ -116,6 +117,30 @@ await select.updateConfig({ columns: 3, searchMode: 'fuzzy' });
 
 Реактивное применение конфигурации — см. [configuration.md#реактивность-updateconfig](configuration.md#реактивность-updateconfig). Внутри `{items}` и `{selectedIds}` делегируются в пайплайны `setItems`/`setValue`. Операция атомарна: невалидный патч не изменяет ничего.
 
+## Пользовательские классы и атрибуты
+
+### setClassName(className)
+
+```js
+select.setClassName('my-select custom-theme');
+```
+
+Устанавливает пользовательские CSS-классы на корневом элементе (`csel-root`). Классы аддитивные — добавляются к существующим. При повторном вызове старые пользовательские классы удаляются, новые добавляются.
+
+### setAttributes(attributes)
+
+```js
+select.setAttributes({ 'data-testid': 'city-select', 'aria-label': 'Выбор города' });
+```
+
+Устанавливает пользовательские HTML-атрибуты на корневом элементе. Новые атрибуты добавляются, существующие перезаписываются. При повторном вызове пользовательские атрибуты удаляются (кроме служебных `role`, `tabindex`, `aria-disabled`).
+
+Оба метода также доступны через `updateConfig()`:
+
+```js
+await select.updateConfig({ className: 'my-class', attributes: { 'data-id': 'x' } });
+```
+
 ## Подписка на события
 
 ```js
@@ -149,8 +174,9 @@ select.destroy();
 
 ## Классы ошибок
 
-| Ошибка | Когда |
-|---|---|
-| `DOMException(…, 'NotSupportedError')` | Нет HTML Popover API |
-| `TypeError` | Неверные аргументы, невалидный конфиг, дубликаты id, >1 id в single mode |
-| `Error` | Lifecycle misuse (методы после destroy), неизвестные id, неоднозначный селектор target |
+
+| Ошибка                            | Когда                                                                                                                        |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `DOMException(…, 'NotSupportedError')` | Нет HTML Popover API                                                                                                           |
+| `TypeError`                             | Неверные аргументы, невалидный конфиг, дубликаты id, >1 id в single mode               |
+| `Error`                                 | Lifecycle misuse (методы после destroy), неизвестные id, неоднозначный селектор target |

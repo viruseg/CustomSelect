@@ -18,6 +18,8 @@ describe('DEFAULT_CONFIG', () => {
         expect(DEFAULT_CONFIG.animations).toBe(true);
         expect(DEFAULT_CONFIG.showSelectedItems).toBe(true);
         expect(DEFAULT_CONFIG.highlightSearchMatches).toBe(false);
+        expect(DEFAULT_CONFIG.className).toBe('');
+        expect(DEFAULT_CONFIG.attributes).toEqual({});
     });
 });
 
@@ -79,6 +81,25 @@ describe('ConfigManager', () => {
         const cm = new ConfigManager({ items: [] });
         expect(() => cm.update(patch)).toThrow(rx);
         expect(() => new ConfigManager({ items: [], ...patch })).toThrow(rx);
+    });
+
+    it.each([
+        [{ className: 123 }, /className/],
+        [{ className: null }, /className/],
+        [{ attributes: 'str' }, /attributes/],
+        [{ attributes: [] }, /attributes/],
+        [{ attributes: null }, /attributes/],
+        [{ attributes: { x: 123 } }, /attributes/],
+    ])('rejects invalid %j', (patch, rx) => {
+        const cm = new ConfigManager({ items: [] });
+        expect(() => cm.update(patch)).toThrow(rx);
+        expect(() => new ConfigManager({ items: [], ...patch })).toThrow(rx);
+    });
+
+    it('accepts valid className and attributes', () => {
+        const cm = new ConfigManager({ items: [], className: 'my-class', attributes: { 'data-id': 'x', role: 'combobox' } });
+        expect(cm.config.className).toBe('my-class');
+        expect(cm.config.attributes).toEqual({ 'data-id': 'x', role: 'combobox' });
     });
 
     it('ignores unknown properties', () => {

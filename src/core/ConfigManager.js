@@ -48,6 +48,8 @@ function buildDefaults() {
         cursorDistanceThreshold: 150,
         showSelectedItems: true,
         highlightSearchMatches: false,
+        className: '',
+        attributes: {},
     };
 }
 
@@ -156,6 +158,19 @@ function mergeValidated(patch, base) {
         const v = rec[field];
         if (v !== undefined && typeof v !== 'number' && typeof v !== 'string') {
             throw new TypeError(`Invalid CustomSelectConfig.${field}: expected number or string.`);
+        }
+    }
+    if (rec['className'] !== undefined && typeof rec['className'] !== 'string') {
+        throw new TypeError('Invalid CustomSelectConfig.className: expected string.');
+    }
+    if (rec['attributes'] !== undefined) {
+        if (typeof rec['attributes'] !== 'object' || rec['attributes'] === null || Array.isArray(rec['attributes'])) {
+            throw new TypeError('Invalid CustomSelectConfig.attributes: expected object.');
+        }
+        for (const [key, val] of Object.entries(/** @type {Record<string, unknown>} */ (rec['attributes']))) {
+            if (typeof val !== 'string') {
+                throw new TypeError(`Invalid CustomSelectConfig.attributes["${key}"]: expected string value.`);
+            }
         }
     }
 

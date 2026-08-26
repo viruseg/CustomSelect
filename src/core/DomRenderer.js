@@ -74,6 +74,10 @@ export default class DomRenderer {
     #navRowCount = null;
     /** @type {string|number|null} */
     #activeItemId = null;
+    /** @type {string[]} Previously applied custom class names for cleanup on update. */
+    #prevCustomClasses = [];
+    /** @type {string[]} Previously applied custom attribute names for cleanup on update. */
+    #prevCustomAttrs = [];
 
     /** @param {{instanceId: string}} p */
     constructor({ instanceId }) {
@@ -268,6 +272,36 @@ export default class DomRenderer {
         clearButton.disabled = lockButtons;
         moreButton.disabled = disabled;
         for (const btn of this.#tagRemoveButtons) btn.disabled = lockButtons;
+    }
+
+    /**
+     * Applies user-provided className and attributes to the root element.
+     * Removes previously applied custom classes/attributes before re-applying.
+     * @param {CustomSelectConfig} config
+     */
+    applyCustomProps(config) {
+        const { root } = this.#els;
+        if (!root) return;
+
+        for (const cls of this.#prevCustomClasses) root.classList.remove(cls);
+        this.#prevCustomClasses = [];
+        const className = config.className ?? '';
+        if (className) {
+            const classes = className.split(/\s+/).filter(Boolean);
+            root.classList.add(...classes);
+            this.#prevCustomClasses = classes;
+        }
+
+        const protectedAttrs = new Set(['role', 'tabindex', 'aria-disabled']);
+        for (const attr of this.#prevCustomAttrs) {
+            if (!protectedAttrs.has(attr)) root.removeAttribute(attr);
+        }
+        this.#prevCustomAttrs = [];
+        const attrs = config.attributes ?? {};
+        for (const [key, val] of Object.entries(attrs)) {
+            root.setAttribute(key, val);
+            this.#prevCustomAttrs.push(key);
+        }
     }
 
     disposeMain() {

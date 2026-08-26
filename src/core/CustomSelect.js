@@ -120,6 +120,7 @@ export default class CustomSelect {
         this.#renderer.applyPopoverConfig(cfg);
         this.#applyGeometryVars();
         this.#renderer.setStateFlags(cfg);
+        this.#renderer.applyCustomProps(cfg);
         this.#syncMainView();
         this.#wireMainEvents();
         this.#wirePopoverEvents();
@@ -983,6 +984,37 @@ export default class CustomSelect {
     }
 
     /**
+     * Sets custom CSS classes on the root element (additive to `csel-root`).
+     * @param {string} className - Space-separated class names.
+     */
+    setClassName(className) {
+        this.#assertAlive();
+        if (typeof className !== 'string') {
+            throw new TypeError('setClassName: expected string.');
+        }
+        this.#configManager.update({ className });
+        this.#renderer.applyCustomProps(this.#cfg());
+    }
+
+    /**
+     * Sets custom HTML attributes on the root element (merged with existing).
+     * @param {Record<string, string>} attributes
+     */
+    setAttributes(attributes) {
+        this.#assertAlive();
+        if (typeof attributes !== 'object' || attributes === null || Array.isArray(attributes)) {
+            throw new TypeError('setAttributes: expected object.');
+        }
+        for (const [key, val] of Object.entries(attributes)) {
+            if (typeof val !== 'string') {
+                throw new TypeError(`setAttributes["${key}"]: expected string value.`);
+            }
+        }
+        this.#configManager.update({ attributes });
+        this.#renderer.applyCustomProps(this.#cfg());
+    }
+
+    /**
      * Динамическая замена items (спека §16). Асинхронна из-за awaited событий.
      * @param {CustomSelectItem[]} newItems
      * @returns {Promise<void>}
@@ -1067,6 +1099,7 @@ export default class CustomSelect {
         const wasDisabled = prev.disabled === true;
         this.#renderer.setStateFlags(next);
         this.#renderer.applyPopoverConfig(next);
+        this.#renderer.applyCustomProps(next);
         if (next.disabled && !wasDisabled && (this.#openState === 'open' || this.#openState === 'opening')) {
             await this.close();
         }
