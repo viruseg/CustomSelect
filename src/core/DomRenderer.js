@@ -443,10 +443,8 @@ export default class DomRenderer {
             img.className = 'csel-img';
             media.append(img);
             content.append(media);
-            const label = document.createElement('span');
-            label.className = 'csel-option-label';
-            label.textContent = accessibleName(item);
-            content.append(label);
+            // Подпись не рендерим: доступное имя несёт aria-label самой опции
+            el.setAttribute('aria-label', accessibleName(item));
         } else if (p.showHighlight) {
             for (const seg of highlightSegments(item.content, p.tokens, { searchMode: p.searchMode, searchCaseSensitive: p.caseSensitive })) {
                 if (seg.match) {

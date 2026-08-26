@@ -334,6 +334,29 @@ test.describe('regression: single mode has no clear button', () => {
     });
 });
 
+test.describe('regression: image options render image only', () => {
+    test('popover image option has no text label, keeps aria-label', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=imagesPopover');
+        await page.waitForFunction(() => Boolean(window.__select));
+        await page.locator('.csel-root').click();
+        await page.waitForSelector('.csel-popover:popover-open');
+
+        const m = await page.evaluate(() => {
+            const opt = document.querySelector('.csel-listbox [role="option"]');
+            return {
+                img: Boolean(opt.querySelector('img')),
+                label: Boolean(opt.querySelector('.csel-option-label')),
+                text: opt.textContent.trim(),
+                ariaLabel: opt.getAttribute('aria-label'),
+            };
+        });
+        expect(m.img).toBe(true);
+        expect(m.label).toBe(false);
+        expect(m.text).toBe('');
+        expect(m.ariaLabel).toBe('Swatch 0');
+    });
+});
+
 test.describe('regression: middle-click deselects tag', () => {
     test('aux-click on selected pill removes it like the × button', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=multiMax2');

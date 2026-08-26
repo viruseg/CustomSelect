@@ -32,6 +32,26 @@
         columns: { items: Array.from({ length: 30 }, (_, i) => ({ id: i, type: 'text', content: `Opt ${i}`, group: i < 15 ? 'A' : 'B' })), columns: 3, modalMaxHeight: 180 },
         tallSingle: { items: Array.from({ length: 30 }, (_, i) => ({ id: i, type: 'text', content: `Opt ${i}` })), modalMaxHeight: 180 },
         multiMax2: { items: Array.from({ length: 12 }, (_, i) => ({ id: i, type: 'text', content: `Item ${i}` })), multiple: true, maxLines: 2 },
+        singleImage: {
+            items: [{
+                id: 1,
+                type: 'image',
+                content: `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'><rect width='48' height='48' rx='8' fill='%236366f1'/></svg>`,
+                ariaLabel: 'Palette swatch',
+            }],
+            selectedIds: [1],
+            searchable: false,
+        },
+        imagesPopover: {
+            items: Array.from({ length: 6 }, (_, i) => ({
+                id: i,
+                type: 'image',
+                content: `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'><rect width='48' height='48' rx='8' fill='%23${['e11d48','6366f1','059669','d97706','7c3aed','db2777'][i]}'/></svg>`,
+                ariaLabel: `Swatch ${i}`,
+            })),
+            multiple: true,
+            searchable: false,
+        },
         overflowMulti: {
             items: Array.from({ length: 22 }, (_, i) => ({ id: i, type: 'text', content: `Fruit ${String(i + 1).padStart(2, '0')}` })),
             multiple: true,

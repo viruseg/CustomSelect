@@ -331,7 +331,6 @@
     width: calc(var(--csel-line-height) - 12px);
     flex: 0 0 auto;
 }
-.csel-option-label { overflow: hidden; text-overflow: ellipsis; }
 
 .csel-hl { background: var(--csel-accent); color: #fff; border-radius: 2px; padding: 0 1px; }
 
