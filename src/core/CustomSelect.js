@@ -153,6 +153,7 @@ export default class CustomSelect {
         pop.style.setProperty('--csel-modal-width',
             c.modalWidth === 'auto' ? 'auto' : typeof c.modalWidth === 'number' ? `${c.modalWidth}px` : (c.modalWidth ?? 'auto'));
         pop.dataset.cselAnim = c.animations ? 'true' : 'false';
+        this.#renderer.setMultiColumn((c.columns ?? 1) > 1);
     }
 
     /** Перерисовывает значение/теги основного модуля из состояния. */
@@ -227,12 +228,17 @@ export default class CustomSelect {
         const lineHeight = c.lineHeight ?? 36;
         if ((c.columns ?? 1) <= 1) {
             this.#renderer.setNavRowCount(null);
+            this.#renderer.setGridRows(null);
             return;
         }
+        // Пока popover display:none (первое открытие до showPopover), clientHeight=0 —
+        // строки сетки выставим после фактического показа (см. #openInternal).
         const listbox = this.#renderer.getNavModel().options[0]?.element?.parentElement;
-        const h = listbox?.clientHeight ?? lineHeight;
+        const h = listbox?.clientHeight ?? 0;
+        if (!h) return;
         const rows = Math.max(1, Math.floor(h / lineHeight));
         this.#renderer.setNavRowCount(rows);
+        this.#renderer.setGridRows(rows);
     }
 
     #wireMainEvents() {
@@ -634,6 +640,9 @@ export default class CustomSelect {
             if (this.#destroyed) return;
             this.#openState = 'open';
             this.#activateListeners();
+            // Реальная высота listbox известна только после показа — теперь можно
+            // расставить строки сетки (до этого clientHeight был 0 в display:none).
+            this.#updateNavRows();
         } catch (err) {
             if (this.#openState === 'opening') {
                 this.#openState = 'closed';
@@ -772,9 +781,21 @@ export default class CustomSelect {
         const c = this.#cfg();
         const popover = this.#renderer.getPopover();
         const triggerRect = toRect(this.#renderer.elements.root.getBoundingClientRect());
+
+        // Intrinsic-размер: до showPopover popover display:none → offset* = 0.
+        // Замеряем в офф-скрин measuring-состоянии (см. .csel-popover--measure).
+        const needsMeasure = !popover.matches(':popover-open');
+        if (needsMeasure) popover.classList.add('csel-popover--measure');
+        const intrinsicW = popover.offsetWidth || 240;
+        const intrinsicH = popover.offsetHeight || 120;
+        if (needsMeasure) {
+            popover.classList.remove('csel-popover--measure');
+            void popover.offsetWidth; // сброс layout-кэша после снятия класса
+        }
+
         const placement = calculatePlacement(
             triggerRect,
-            { left: 0, top: 0, width: popover.offsetWidth || 240, height: popover.offsetHeight || 120 },
+            { left: 0, top: 0, width: intrinsicW, height: intrinsicH },
             { width: window.innerWidth, height: window.innerHeight },
             { offset: c.modalOffset, maxHeight: c.modalMaxHeight },
         );
@@ -788,7 +809,7 @@ export default class CustomSelect {
             // min-width popover = ширина триггера (решение №12.3): расширяем через placement повторно
             const widened = calculatePlacement(
                 triggerRect,
-                { left: 0, top: 0, width: triggerRect.width, height: popover.offsetHeight || 120 },
+                { left: 0, top: 0, width: triggerRect.width, height: intrinsicH },
                 { width: window.innerWidth, height: window.innerHeight },
                 { offset: c.modalOffset, maxHeight: c.modalMaxHeight },
             );

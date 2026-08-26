@@ -467,6 +467,24 @@ export default class DomRenderer {
     }
 
     /**
+     * Переключает listbox между вертикальным списком (single) и сеткой (multi).
+     * @param {boolean} isMulti
+     */
+    setMultiColumn(isMulti) {
+        this.#popoverRefs?.listbox.classList.toggle('csel-listbox--grid', isMulti === true);
+    }
+
+    /**
+     * Явное число строк сетки — без него grid-auto-flow:column не переносит элементы вниз.
+     * @param {number|null} rows
+     */
+    setGridRows(rows) {
+        const lb = this.#popoverRefs?.listbox;
+        if (!lb) return;
+        lb.style.gridTemplateRows = rows ? `repeat(${rows}, var(--csel-line-height))` : '';
+    }
+
+    /**
      * @param {string|number|null} itemId
      * @param {{searchable: boolean}} cfg
      * @returns {boolean} изменилось ли

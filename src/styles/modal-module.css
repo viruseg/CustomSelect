@@ -75,16 +75,30 @@
 .csel-select-all:disabled,
 .csel-clear-all:disabled { opacity: 0.4; cursor: default; }
 
+/* Single column: обычный вертикальный список со скроллом */
 .csel-listbox {
-    overflow-x: auto;
-    overflow-y: hidden;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding: 4px;
+}
+
+/* Multi column: сетка заполняется сверху-вниз, перенос в новые колонки вправо.
+   Явные строки (grid-template-rows) задаёт фасад — без них flow-column
+   раскладывает элементы в одну горизонтальную линию. */
+.csel-listbox--grid {
     display: grid;
     grid-template-columns: repeat(var(--csel-columns), minmax(var(--csel-column-width, 160px), 1fr));
     grid-auto-flow: column;
+    grid-auto-columns: var(--csel-column-width, 160px);
     column-gap: var(--csel-column-gap);
     align-content: start;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
+/* В measure-режиме высота считается как вертикальный стек (template-rows ещё не применены) */
+.csel-popover--measure .csel-listbox--grid { display: block; }
 .csel-listbox:focus-visible { outline: 2px solid var(--csel-border-focus); outline-offset: -2px; }
 
 .csel-group-header {
@@ -162,3 +176,13 @@
 .csel-search-clear[hidden],
 .csel-select-all[hidden],
 .csel-clear-all[hidden] { display: none; }
+
+/* Офф-скрин замер intrinsic-размера до showPopover (popover ещё display:none) */
+.csel-popover--measure {
+    display: flex !important;
+    position: absolute;
+    left: -99999px !important;
+    top: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}

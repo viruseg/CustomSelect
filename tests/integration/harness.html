@@ -30,6 +30,7 @@
         multi: { items: baseItems, multiple: true, selectedIds: ['a'], showSelectAll: true, showClearAll: true, maxLines: 1 },
         search: { items: baseItems, highlightSearchMatches: true },
         columns: { items: Array.from({ length: 30 }, (_, i) => ({ id: i, type: 'text', content: `Opt ${i}` })), columns: 3, modalMaxHeight: 180 },
+        tallSingle: { items: Array.from({ length: 30 }, (_, i) => ({ id: i, type: 'text', content: `Opt ${i}` })), modalMaxHeight: 180 },
         readonly: { items: baseItems, readonly: true },
         loading: { items: baseItems, loading: true },
         disabled: { items: baseItems, disabled: true },
