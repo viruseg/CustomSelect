@@ -378,6 +378,10 @@ export default class DomRenderer {
         this.#navOptions = [];
         this.#activeItemId = null;
 
+        // Список целиком из image-элементов: ширина listbox — по контенту
+        const fitWidth = matched.length > 0 && matched.every((i) => i.type === 'image');
+        listbox.classList.toggle('csel-listbox--fit', fitWidth);
+
         const frag = document.createDocumentFragment();
         let optionIndex = 0;
         const tokens = Array.isArray(ctx.tokens) ? ctx.tokens : tokenize(ctx.query);
@@ -439,7 +443,6 @@ export default class DomRenderer {
             el.classList.add('csel-option--disabled');
             el.setAttribute('aria-disabled', 'true');
         }
-        if (item.type === 'image') el.classList.add('csel-option--image');
         if (p.selected) el.classList.add('csel-option--selected');
 
         // Чекбокс — для текстовых опций multiple; image-опция по ширине равна картинке

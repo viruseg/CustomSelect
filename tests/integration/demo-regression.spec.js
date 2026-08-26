@@ -370,24 +370,39 @@ test.describe('regression: selected image vertically centered', () => {
 });
 
 test.describe('regression: image option hugs image, image centered', () => {
-    test('option width fits image; image centered vertically', async ({ page }) => {
+    test('listbox shrinks to content; option still fills its area; image centered', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=imagesPopover');
         await page.waitForFunction(() => Boolean(window.__select));
         await page.locator('.csel-root').click();
         await page.waitForSelector('.csel-popover:popover-open');
 
         const m = await page.evaluate(() => {
+            const lb = document.querySelector('.csel-listbox').getBoundingClientRect();
             const opt = document.querySelector('.csel-listbox [role="option"]').getBoundingClientRect();
             const img = document.querySelector('.csel-listbox [role="option"] img').getBoundingClientRect();
             return {
+                lbW: Math.round(lb.width),
+                optFillsListbox: Math.abs(opt.width - (lb.width - 8)) <= 2, // 8px — паддинги listbox
                 emptyW: opt.width - img.width,
                 centerDelta: Math.abs((opt.y + opt.height / 2) - (img.y + img.height / 2)),
             };
         });
-        // опция = картинка + горизонтальные паддинги
+        // listbox узкий: ровно под контент, а не 380+px
+        expect(m.lbW).toBeLessThanOrEqual(120);
+        // опция по-прежнему заполняет отведённую площадь
+        expect(m.optFillsListbox).toBe(true);
         expect(m.emptyW).toBeLessThanOrEqual(18);
-        // вертикальный центр
         expect(m.centerDelta).toBeLessThanOrEqual(1);
+    });
+
+    test('text listbox keeps full width (fit-mode only for pure image lists)', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=basic');
+        await page.waitForFunction(() => Boolean(window.__select));
+        await page.locator('.csel-root').click();
+        await page.waitForSelector('.csel-popover:popover-open');
+        const w = await page.evaluate(() =>
+            Math.round(document.querySelector('.csel-listbox').getBoundingClientRect().width));
+        expect(w).toBeGreaterThan(150);
     });
 });
 
