@@ -243,6 +243,7 @@ export default class DomRenderer {
         root.classList.toggle('csel-root--disabled', disabled);
         root.classList.toggle('csel-root--readonly', readonly);
         root.classList.toggle('csel-root--loading', config.loading === true);
+        root.classList.toggle('csel-root--multiple', config.multiple === true);
         root.setAttribute('aria-disabled', String(disabled));
         if (disabled) root.removeAttribute('tabindex');
         else root.tabIndex = 0;

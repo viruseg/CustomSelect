@@ -177,6 +177,24 @@ test.describe('regression: scrollbar styling and horizontal snap', () => {
     });
 });
 
+test.describe('regression: tag aligned top-left with maxLines>1', () => {
+    test('single selected tag sits at top-left of the reserved area', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=multiMax2');
+        await page.waitForFunction(() => Boolean(window.__select));
+        await page.evaluate(() => window.__api.setValue([0]));
+
+        const m = await page.evaluate(() => {
+            const root = document.querySelector('.csel-root');
+            const tag = root.querySelector('.csel-tag');
+            const rr = root.getBoundingClientRect();
+            const tr = tag.getBoundingClientRect();
+            return { dx: tr.x - rr.x, dy: tr.y - rr.y };
+        });
+        expect(m.dx).toBeLessThanOrEqual(12);
+        expect(m.dy).toBeLessThanOrEqual(12);
+    });
+});
+
 test.describe('regression: no text selection on placeholder/buttons', () => {
     test('placeholder and every trigger button are user-select:none', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=multiMax2');
