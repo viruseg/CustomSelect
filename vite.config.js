@@ -6,7 +6,6 @@ export default defineConfig({
         dts({
             entryRoot: 'src',
             include: ['src/**/*.js'],
-            rollupTypes: true,
         }),
     ],
     build: {
