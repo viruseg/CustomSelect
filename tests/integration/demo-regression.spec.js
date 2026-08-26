@@ -47,6 +47,23 @@ test.describe('regression: popover sized to content', () => {
     });
 });
 
+test.describe('regression: multiple placeholder visibility', () => {
+    test('placeholder hidden while selection exists, returns after clearing', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=multi');
+        await page.waitForFunction(() => Boolean(window.__select));
+
+        // harness multi стартует с selectedIds:['a']
+        await expect(page.locator('.csel-root .csel-tag')).toHaveCount(1);
+        const ph = page.locator('.csel-root .csel-placeholder');
+        await expect(ph).toBeHidden();
+
+        // снимаем последний тег крестиком → плейсхолдер возвращается
+        await page.locator('.csel-root .csel-tag-remove').click();
+        await expect(page.locator('.csel-root .csel-tag')).toHaveCount(0);
+        await expect(ph).toBeVisible();
+    });
+});
+
 test.describe('regression: scroll semantics per column mode', () => {
     test('single column: vertical scrolling works, no horizontal scrollbar', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=tallSingle');

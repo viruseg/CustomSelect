@@ -163,6 +163,9 @@ export default class CustomSelect {
         if (c.multiple) {
             this.#renderer.renderValue(null, c);
             this.#renderer.renderTags(selected, c);
+            // Плейсхолдер в multiple показывается только при пустом выборе,
+            // иначе он отнимает ширину строки у тегов.
+            this.#renderer.setPlaceholderVisible(selected.length === 0);
             this.#recalcTags();
         } else {
             this.#renderer.renderTags([], c);

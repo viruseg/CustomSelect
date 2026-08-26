@@ -219,6 +219,11 @@ export default class DomRenderer {
     }
 
     /** @param {boolean} visible */
+    setPlaceholderVisible(visible) {
+        this.#els.placeholder.hidden = !visible;
+    }
+
+    /** @param {boolean} visible */
     setMoreVisible(visible) {
         this.#els.moreButton.hidden = !visible;
     }
