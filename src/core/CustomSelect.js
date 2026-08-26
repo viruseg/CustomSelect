@@ -914,6 +914,18 @@ export default class CustomSelect {
             pill.style.display = i < cutoff ? '' : 'none';
         });
         this.#renderer.setMoreVisible(anyBeyond && cutoff < pills.length);
+
+        // Пост-инвариант: кнопка «...» обязана находиться в пределах зарезервированных
+        // линий. Хвост последней линии мог закончиться ровно на пилюле — тогда кнопка
+        // переносится за границу и её надо «досадить» скрытием хвостовых видимых пилюль.
+        const limitTop = c.lineHeight * c.maxLines;
+        let guard = pills.length;
+        while (guard-- > 0 && !moreButton.hidden && moreButton.offsetTop >= limitTop) {
+            const lastVisible = pills.filter((p) => p.style.display !== 'none').pop();
+            if (!lastVisible) break;
+            lastVisible.style.display = 'none';
+            void moreButton.offsetWidth; // reflow перед следующей проверкой
+        }
     }
 
     /** @returns {CustomSelectItem[]} */

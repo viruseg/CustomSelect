@@ -450,13 +450,15 @@ test.describe('regression: maxLines overflow hides pills and keeps them inside',
             const lineH = 36;
             const maxLines = 2;
             const limitTop = lineH * maxLines;
+            const more = root.querySelector('.csel-more');
             const vis = pills
                 .filter((p) => getComputedStyle(p).display !== 'none')
                 .map((p) => ({ top: p.offsetTop, h: p.offsetHeight }));
             return {
                 total: pills.length,
                 visible: vis.length,
-                moreShown: !root.querySelector('.csel-more').hidden,
+                moreShown: !more.hidden,
+                moreTop: more.offsetTop,
                 minTop: Math.min(...vis.map((v) => v.top)),
                 worstBottom: Math.max(...vis.map((v) => v.top + v.h)),
             };
@@ -464,9 +466,11 @@ test.describe('regression: maxLines overflow hides pills and keeps them inside',
 
         expect(m.total).toBeGreaterThan(m.visible);
         expect(m.moreShown).toBe(true);
+        // кнопка «...» обязана сидеть в пределах зарезервированных линий
+        expect(m.moreTop).toBeLessThan(36 * 2);
         // ни одна видимая пилюля не начинается выше области (нет center-выброса вверх)
         expect(m.minTop).toBeGreaterThanOrEqual(-1);
-        // все видимые пилюли укладываются в зарезервированные maxLines строк
+        // все видимые пилюли укладываются в зарезервированные maxLines строки
         expect(m.worstBottom).toBeLessThanOrEqual(36 * 2 + 2);
     });
 });
