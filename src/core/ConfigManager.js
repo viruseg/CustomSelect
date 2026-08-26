@@ -162,7 +162,7 @@ function mergeValidated(patch, base) {
     for (const key of Object.keys(rec)) {
         if (key === 'items' || key === 'selectedIds') continue;
         if (key in DEFAULT_CONFIG) {
-            (/** @type {Record<string, unknown>} */ (next))[key] = /** @type {any} */ (rec[key]);
+            (/** @type {Record<string, unknown>} */ (/** @type {unknown} */ (next)))[key] = /** @type {any} */ (rec[key]);
         }
     }
     return next;
