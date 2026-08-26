@@ -328,20 +328,10 @@
 .csel-option--selected .csel-checkbox::after { content: '✓'; }
 
 .csel-option-media {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-flex;
     height: calc(var(--csel-line-height) - 12px);
     width: calc(var(--csel-line-height) - 12px);
     flex: 0 0 auto;
-}
-.csel-option-media img { display: block; }
-
-/* Список только из image-элементов: ширина по контенту, треки не растягиваются */
-.csel-listbox--fit { width: fit-content; max-width: 100%; }
-.csel-listbox--fit.csel-listbox--grid {
-    grid-template-columns: repeat(var(--csel-columns), auto);
-    grid-auto-columns: auto;
 }
 
 .csel-hl { background: var(--csel-accent); color: #fff; border-radius: 2px; padding: 0 1px; }
