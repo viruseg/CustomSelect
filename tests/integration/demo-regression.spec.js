@@ -205,6 +205,37 @@ test.describe('regression: tag aligned top-left with maxLines>1', () => {
         expect(Math.abs(twoLines.dy - oneLine.dy)).toBeLessThanOrEqual(1);
         expect(oneLine.dy).toBeGreaterThanOrEqual(0);
     });
+
+    test('fully filled: top, inter-line and bottom gaps are equal', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=multiMax2');
+        await page.waitForFunction(() => Boolean(window.__select));
+
+        // заполнить ОБЕ линии тегами одинаковой ширины
+        await page.evaluate(() => window.__api.setValue([0, 1, 2, 3, 4, 5, 6]));
+        await page.waitForTimeout(150);
+
+        const gaps = await page.evaluate(() => {
+            const root = document.querySelector('.csel-root');
+            const rr = root.getBoundingClientRect();
+            const tags = [...root.querySelectorAll('.csel-tag')]
+                .filter((p) => getComputedStyle(p).display !== 'none')
+                .map((p) => p.getBoundingClientRect());
+            const first = tags[0];
+            const last = tags[tags.length - 1];
+            // вторая линия = теги с y заметно ниже первой
+            const secondLine = tags.find((t) => t.y - first.y > first.height);
+            return {
+                top: first.y - rr.y,
+                mid: secondLine ? secondLine.y - (first.y + first.height) : null,
+                bottom: rr.bottom - (last.y + last.height),
+            };
+        });
+
+        expect(gaps.mid).not.toBeNull();
+        expect(Math.abs(gaps.top - gaps.mid)).toBeLessThanOrEqual(1.5);
+        expect(Math.abs(gaps.mid - gaps.bottom)).toBeLessThanOrEqual(1.5);
+        expect(Math.abs(gaps.top - gaps.bottom)).toBeLessThanOrEqual(1.5);
+    });
 });
 
 test.describe('regression: no text selection on placeholder/buttons', () => {

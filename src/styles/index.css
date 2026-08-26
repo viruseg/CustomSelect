@@ -148,11 +148,21 @@
 .csel-placeholder,
 .csel-root button { user-select: none; }
 
-/* multiple: первый тег всегда стоит на одном и том же месте у верхнего
-   левого края независимо от числа заполненных строк — никакого
-   вертикального центрирования (оно сдвигало бы первую строку) */
+/* multiple: вертикальный ритм целиком внутри value-area — отступы
+   сверху / между строками / снизу равны при полном заполнении, а первый
+   тег стоит пиксельно неподвижно при любом заполнении.
+   Формула высоты: N*(tagH) + (N-1)*gap + 2*pad, где tagH = line-height - 6px
+   (28px контент + 2px рамка тега), pad = gap = 4px. */
+.csel-root--multiple { padding-block: 0; }
 .csel-root--multiple .csel-value-area {
-    min-height: calc(var(--csel-line-height) * var(--csel-max-lines, 1));
+    box-sizing: border-box;
+    min-height: calc(
+        var(--csel-max-lines) * (var(--csel-line-height) - 6px)
+        + (var(--csel-max-lines) - 1) * 4px
+        + 8px
+    );
+    padding-block: 4px;
+    row-gap: 4px;
     align-content: flex-start;
     align-items: flex-start;
 }
