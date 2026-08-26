@@ -311,6 +311,29 @@ test.describe('regression: constant height with maxLines', () => {
     });
 });
 
+test.describe('regression: single mode has no clear button', () => {
+    test('× hidden in single mode, appears in multiple; clear() API still works', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=single');
+        await page.waitForFunction(() => Boolean(window.__select));
+
+        // single + выбранный элемент: крестика нет
+        await expect(page.locator('.csel-root .csel-clear')).toBeHidden();
+
+        // переключили в multiple — крестик появился (выбор сохранился)
+        await page.evaluate(() => window.__api.updateConfig({ multiple: true }));
+        await expect(page.locator('.csel-root .csel-clear')).toBeVisible();
+        expect(await page.evaluate(() => window.__api.getValue().length)).toBe(1);
+
+        // вернулись в single — крестик снова скрыт
+        await page.evaluate(() => window.__api.updateConfig({ multiple: false }));
+        await expect(page.locator('.csel-root .csel-clear')).toBeHidden();
+
+        // публичный clear() в single работает как прежде
+        await page.evaluate(() => window.__api.clear());
+        expect(await page.evaluate(() => window.__api.getValue())).toEqual([]);
+    });
+});
+
 test.describe('regression: middle-click deselects tag', () => {
     test('aux-click on selected pill removes it like the × button', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=multiMax2');

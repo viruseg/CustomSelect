@@ -175,7 +175,8 @@ export default class CustomSelect {
             this.#renderer.renderValue(selected[0] ?? null, c);
             this.#renderer.setMoreVisible(false);
         }
-        this.#renderer.setClearVisible(c.showClearAll === true && selected.length > 0);
+        // «×» очистки — только multiple: в single пользователь не снимает выбор
+        this.#renderer.setClearVisible(c.showClearAll === true && c.multiple === true && selected.length > 0);
         this.#renderer.setStateFlags(c);
     }
 
