@@ -188,10 +188,15 @@ test.describe('regression: tag aligned top-left with maxLines>1', () => {
             const tag = root.querySelector('.csel-tag');
             const rr = root.getBoundingClientRect();
             const tr = tag.getBoundingClientRect();
-            return { dx: tr.x - rr.x, dy: tr.y - rr.y };
+            return { dx: tr.x - rr.x, tagCy: tr.y + tr.height / 2 };
         });
         expect(m.dx).toBeLessThanOrEqual(12);
-        expect(m.dy).toBeLessThanOrEqual(12);
+        // тег центрирован по вертикали в зарезервированной области
+        const area = await page.evaluate(() => {
+            const a = document.querySelector('.csel-value-area').getBoundingClientRect();
+            return a.y + a.height / 2;
+        });
+        expect(Math.abs(m.tagCy - area)).toBeLessThanOrEqual(4);
     });
 });
 

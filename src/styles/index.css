@@ -148,10 +148,10 @@
 .csel-placeholder,
 .csel-root button { user-select: none; }
 
-/* multiple: содержимое прижато к верхнему левому углу зарезервированной области */
+/* multiple: блок тегов центрируется по вертикали в зарезервированной области */
 .csel-root--multiple .csel-value-area {
     min-height: calc(var(--csel-line-height) * var(--csel-max-lines, 1));
-    align-content: flex-start;
+    align-content: center;
     align-items: flex-start;
 }
 
