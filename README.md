@@ -55,7 +55,7 @@ npm install git+https://example.com/user/custom-select.git
 
 ```js
 import { CustomSelect } from 'custom-select';            // класс
-import { CustomSelect, VERSION } from 'custom-select'; // + версия
+import { CustomSelect, CUSTOM_SELECT_VERSION } from 'custom-select'; // + версия библиотеки
 ```
 
 > **Стили обязательны.** Подключите их тегом в HTML:

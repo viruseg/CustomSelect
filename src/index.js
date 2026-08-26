@@ -1,2 +1,2 @@
 export { CustomSelect } from './core/CustomSelect.js';
-export { VERSION } from './version.js';
+export { CUSTOM_SELECT_VERSION } from './version.js';

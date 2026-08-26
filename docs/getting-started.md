@@ -22,7 +22,7 @@ npm install git+https://example.com/user/custom-select.git
 
 | Импорт | Что даёт |
 |---|---|
-| `custom-select` | Класс `CustomSelect` (named) + `VERSION` |
+| `custom-select` | Класс `CustomSelect` + `CUSTOM_SELECT_VERSION` (named) |
 | `custom-select/index.css` | Все стили библиотеки (подключать через `<link>`) |
 
 ## Минимальный пример
