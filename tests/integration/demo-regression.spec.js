@@ -334,6 +334,20 @@ test.describe('regression: single mode has no clear button', () => {
     });
 });
 
+test.describe('regression: selected image vertically centered', () => {
+    test('image center matches value-text center in trigger', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=singleImage');
+        await page.waitForFunction(() => Boolean(window.__select));
+
+        const d = await page.evaluate(() => {
+            const vt = document.querySelector('.csel-root .csel-value-text').getBoundingClientRect();
+            const im = document.querySelector('.csel-root .csel-img').getBoundingClientRect();
+            return Math.abs((vt.y + vt.height / 2) - (im.y + im.height / 2));
+        });
+        expect(d).toBeLessThanOrEqual(1);
+    });
+});
+
 test.describe('regression: image options render image only', () => {
     test('popover image option has no text label, keeps aria-label', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=imagesPopover');

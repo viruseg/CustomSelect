@@ -166,6 +166,7 @@ export default class DomRenderer {
         const has = item !== null;
         valueText.hidden = !has;
         placeholder.hidden = has;
+        valueText.classList.toggle('csel-value-text--image', has && item.type === 'image');
         if (item !== null) {
             if (item.type === 'image') {
                 const img = document.createElement('img');

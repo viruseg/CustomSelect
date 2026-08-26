@@ -63,6 +63,8 @@
 }
 
 .csel-value-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* image-значение: flex убирает базлайн-зазор и центрирует картинку по вертикали */
+.csel-value-text--image { display: inline-flex; align-items: center; }
 .csel-placeholder { color: var(--csel-text-muted); pointer-events: none; }
 
 .csel-tags { display: contents; }
