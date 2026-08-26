@@ -913,11 +913,27 @@ export default class CustomSelect {
             throw new TypeError('updateConfig: expected object.');
         }
         const prev = { ...this.#cfg() };
+        // Атомарность: валидируем items/selectedIds ДО коммита скаляров через
+        // ConfigManager, иначе при броске из setItems/setValue конфиг и state
+        // разошлись бы (частично применённый patch).
+        if ('items' in patch) validateItems(patch.items);
+        if ('selectedIds' in patch) {
+            const ids = /** @type {(string|number)[]} */ (patch.selectedIds);
+            if (!Array.isArray(ids)) throw new TypeError('selectedIds: expected array.');
+            const effMultiple = 'multiple' in patch ? patch.multiple === true : prev.multiple;
+            if (!effMultiple && ids.length > 1) {
+                throw new TypeError('Multiple selected ids provided in single mode.');
+            }
+            for (const ref of ids) {
+                const r = this.#resolveId(ref);
+                if (r === undefined) throw new Error(`Unknown id in setValue: ${String(ref)}.`);
+            }
+        }
         const next = this.#configManager.update(patch);
 
         // Спека §19–20: берём СЫРЫЕ значения из patch — ConfigManager.mergeValidated
         // пропускает keys items/selectedIds, поэтому next.* содержал бы устаревшие значения.
-        // Валидация выполняется внутри пайплайнов setItems/setValue.
+        // Валидация уже выполнена выше (dry-run), здесь пайплайны применяют state-изменения.
         if ('items' in patch) await this.setItems(/** @type {CustomSelectItem[]} */ (patch.items));
         if ('selectedIds' in patch) await this.setValue(/** @type {(string|number)[]} */ (patch.selectedIds));
 
@@ -943,7 +959,7 @@ export default class CustomSelect {
             this.#scheduleReposition();
         }
 
-        const viewKeys = /** @type {const} */ (['searchable', 'searchMode', 'searchCaseSensitive', 'showSelectedItems', 'highlightSearchMatches', 'emptySearchText', 'emptyListText', 'placeholder', 'showClearAll', 'showSelectAll']);
+        const viewKeys = /** @type {const} */ (['searchable', 'searchMode', 'searchCaseSensitive', 'showSelectedItems', 'highlightSearchMatches', 'emptySearchText', 'emptyListText', 'placeholder', 'showClearAll', 'showSelectAll', 'loading']);
         const viewChanged = viewKeys.some((k) => JSON.stringify(prev[k]) !== JSON.stringify(next[k]));
         if (viewChanged) {
             this.#syncMainView();
