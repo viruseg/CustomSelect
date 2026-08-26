@@ -106,15 +106,19 @@
 }
 ```
 
-## Многоколоночность и прокрутка
+## Режимы списка и прокрутка
 
-Список — CSS Grid с заполнением сверху вниз:
+**Single column (`columns: 1`, по умолчанию)** — обычный вертикальный список. Если элементы не вмещаются в `modalMaxHeight`, список скроллится по вертикали; горизонтальной прокрутки нет.
+
+**Multi column (`columns > 1`)** — CSS Grid с заполнением сверху вниз:
 
 ```css
-.csel-listbox {
+.csel-listbox--grid {
     display: grid;
     grid-template-columns: repeat(var(--csel-columns), minmax(var(--csel-column-width, 160px), 1fr));
+    grid-template-rows: repeat(N, var(--csel-line-height)); /* N считает библиотека */
     grid-auto-flow: column;
+    grid-auto-columns: var(--csel-column-width, 160px);
     overflow-x: auto;
     overflow-y: hidden;
 }
@@ -122,6 +126,7 @@
 
 - Ширина колонки по умолчанию 160px — переопределите `--csel-column-width`.
 - Вертикальной прокрутки нет: лишние элементы уходят в новые колонки вправо.
+- Число строк сетки библиотека вычисляет из доступной высоты и выставляет сама (`grid-template-rows`) — без явных строк `grid-auto-flow: column` не переносит элементы вниз.
 - Заголовки групп растягиваются на всю ширину сетки (`grid-column: 1/-1`).
 
 ## Изображения в опциях
