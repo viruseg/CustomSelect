@@ -177,6 +177,35 @@ test.describe('regression: scrollbar styling and horizontal snap', () => {
     });
 });
 
+test.describe('regression: constant height with maxLines', () => {
+    test('multiple select reserves maxLines height immediately and keeps it', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=multiMax2');
+        await page.waitForFunction(() => Boolean(window.__select));
+
+        const h = () => page.evaluate(() =>
+            Math.round(document.querySelector('.csel-root').getBoundingClientRect().height));
+
+        // пустой выбор — высота уже две строки
+        const emptyH = await h();
+        expect(emptyH).toBeGreaterThanOrEqual(70);
+        expect(emptyH).toBeLessThanOrEqual(76);
+
+        // после заполнения тегами высота не изменилась
+        await page.evaluate(() => window.__api.setValue([0, 1, 2, 3, 4]));
+        await page.waitForTimeout(150);
+        const filledH = await h();
+        expect(Math.abs(filledH - emptyH)).toBeLessThanOrEqual(2);
+    });
+
+    test('single mode keeps natural one-line height', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=basic');
+        await page.waitForFunction(() => Boolean(window.__select));
+        const hh = await page.evaluate(() =>
+            Math.round(document.querySelector('.csel-root').getBoundingClientRect().height));
+        expect(hh).toBeLessThanOrEqual(40);
+    });
+});
+
 test.describe('regression: mouse wheel scrolls columns horizontally', () => {
     test('vertical wheel translates to horizontal column scrolling', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=columns');

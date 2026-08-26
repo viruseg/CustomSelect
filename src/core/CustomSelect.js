@@ -145,6 +145,10 @@ export default class CustomSelect {
         rootStyle.setProperty('--csel-line-height', `${c.lineHeight}px`);
         rootStyle.setProperty('--csel-main-width', typeof c.mainWidth === 'number' ? `${c.mainWidth}px` : (c.mainWidth ?? '100%'));
         rootStyle.setProperty('--csel-max-lines', String(c.maxLines));
+        // multiple: высота триггера постоянна = maxLines строк, независимо от заполнения
+        rootStyle.minHeight = c.multiple === true
+            ? `${(c.maxLines ?? 1) * (c.lineHeight ?? 36)}px`
+            : '';
         const pop = this.#renderer.getPopover();
         pop.style.setProperty('--csel-line-height', `${c.lineHeight}px`);
         pop.style.setProperty('--csel-columns', String(c.columns));
