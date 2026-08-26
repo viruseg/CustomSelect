@@ -390,17 +390,27 @@ export default class CustomSelect {
                 if (e.key === 'Escape') {
                     e.preventDefault();
                     void this.close();
-                } else if (e.key === 'ArrowDown') {
+                    return;
+                }
+
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Home' || e.key === 'End') {
                     e.preventDefault();
-                    const id = this.#firstEnabledNavId();
-                    if (id !== null) {
-                        this.#activeId = id;
-                        this.#renderer.setActiveOption(id, { searchable: true });
-                    }
+                    this.#keyboardNav.handleKeyDown(e);
+                    return;
+                }
+                if (e.key === 'Enter' && this.#activeId !== null) {
+                    e.preventDefault();
+                    void this.#uiSelectIntent(this.#activeId);
+                    return;
                 }
                 return;
             }
             if (e.key === 'Tab') return;
+
+            if (this.#cfg().searchable === true && this.#isTypingKey(e)) {
+                this.#renderer.focusSearch();
+                return;
+            }
             this.#keyboardNav.handleKeyDown(e);
         };
 
@@ -607,6 +617,16 @@ export default class CustomSelect {
         const opts = this.#renderer.getNavModel().options;
         const found = opts.find((o) => !o.disabled);
         return found ? found.id : null;
+    }
+
+    /**
+     * Печатный символ (буква/цифра) без модификаторов — кандидат на ввод в поиск.
+     * Пробел исключён: в списке он выбирает активную опцию.
+     * @param {KeyboardEvent} e
+     * @returns {boolean}
+     */
+    #isTypingKey(e) {
+        return e.key.length === 1 && e.key !== ' ' && !e.ctrlKey && !e.metaKey && !e.altKey;
     }
 
     /**
