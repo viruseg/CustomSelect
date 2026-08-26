@@ -167,6 +167,7 @@ select.on('change', (instance, items) => { /* ... */ });
 |---|---|
 | `open()` / `close()` / `toggle()` | Управление списком (async) |
 | `getValue()` | Текущий выбор — массив items |
+| `getPopover()` | DOM-элемент popover'а (для интеграции с оверлей-системами) |
 | `setValue(ids)` | Программная установка выбора (async) |
 | `setItems(items)` | Замена списка элементов (async) |
 | `updateConfig(patch)` | Реактивное обновление конфигурации (async) |

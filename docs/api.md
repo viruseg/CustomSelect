@@ -157,6 +157,18 @@ select.setAttributes({ 'data-testid': 'city-select', 'aria-label': 'Выбор �
 await select.updateConfig({ className: 'my-class', attributes: { 'data-id': 'x' } });
 ```
 
+## Интеграция с оверлей-системами
+
+### getPopover()
+
+```js
+const popoverEl = select.getPopover(); // HTMLElement
+```
+
+Возвращает DOM-элемент popover'а — выпадающий список, отрендеренный в `document.body`.
+
+При первом вызове элемент создаётся лениво (вызов `open()` не требуется).
+
 ## Подписка на события
 
 ```js

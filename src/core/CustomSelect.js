@@ -998,6 +998,21 @@ export default class CustomSelect {
         return this.#state.getSelectedIds();
     }
 
+    /**
+     * Returns the popover DOM element used for the dropdown list.
+     * Creates the element lazily on first call if it does not exist yet,
+     * so the caller never needs to wait for `open()`.
+     * Useful for integrating with overlay systems that need to treat the popover
+     * as an external element (e.g. FloatingOverlay {@link externalElements}).
+     *
+     * @returns {HTMLElement}
+     */
+    getPopover() {
+        this.#assertAlive();
+        this.#renderer.ensurePopover(this.#cfg());
+        return this.#renderer.getPopover();
+    }
+
     /** @param {string} event @param {Function} handler */
     on(event, handler) {
         this.#assertAlive();
