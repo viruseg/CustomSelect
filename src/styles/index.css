@@ -408,3 +408,6 @@
         transform: translateY(0);
     }
 }
+
+/* Три точки кнопки «...» — SVG, красится currentColor */
+.csel-dots circle { fill: currentColor; }

@@ -311,6 +311,27 @@ test.describe('regression: constant height with maxLines', () => {
     });
 });
 
+test.describe('regression: more-button uses svg dots', () => {
+    test('button contains svg dots instead of text', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=multiMax2');
+        await page.waitForFunction(() => Boolean(window.__select));
+        await page.evaluate(() => window.__api.setValue([0, 1, 2, 3, 4, 5, 6]));
+        await page.waitForTimeout(150);
+
+        const m = await page.evaluate(() => {
+            const more = document.querySelector('.csel-root .csel-more');
+            return {
+                text: more.textContent.trim(),
+                dots: Boolean(more.querySelector('svg.csel-dots')),
+                label: more.getAttribute('aria-label'),
+            };
+        });
+        expect(m.text).toBe('');
+        expect(m.dots).toBe(true);
+        expect(m.label).toBe('Show more');
+    });
+});
+
 test.describe('regression: single mode has no clear button', () => {
     test('× hidden in single mode, appears in multiple; clear() API still works', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=single');

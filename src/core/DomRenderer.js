@@ -112,7 +112,21 @@ export default class DomRenderer {
         const moreButton = document.createElement('button');
         moreButton.type = 'button';
         moreButton.className = 'csel-more';
-        moreButton.textContent = '...';
+        moreButton.setAttribute('aria-label', 'Show more');
+        const dots = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        dots.setAttribute('viewBox', '0 0 18 4');
+        dots.setAttribute('width', '18');
+        dots.setAttribute('height', '4');
+        dots.setAttribute('aria-hidden', 'true');
+        dots.classList.add('csel-dots');
+        for (const cx of [3, 9, 15]) {
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', String(cx));
+            circle.setAttribute('cy', '2');
+            circle.setAttribute('r', '2');
+            dots.append(circle);
+        }
+        moreButton.append(dots);
         moreButton.tabIndex = -1;
         moreButton.hidden = true;
 
