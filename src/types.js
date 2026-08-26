@@ -29,7 +29,7 @@
  * @property {number} [maxLines=1]
  * @property {number} [lineHeight=36]
  *
- * @property {number|string} [mainWidth='100%']
+ * @property {number|string} [mainWidth=150]
  *
  * @property {number|string} [modalWidth='auto']
  * @property {number} [modalMaxHeight=320]

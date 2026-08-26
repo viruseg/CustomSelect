@@ -14,6 +14,7 @@ describe('DEFAULT_CONFIG', () => {
         expect(DEFAULT_CONFIG.columnGap).toBe(8);
         expect(DEFAULT_CONFIG.searchMode).toBe('contains');
         expect(DEFAULT_CONFIG.cursorDistanceThreshold).toBe(150);
+        expect(DEFAULT_CONFIG.mainWidth).toBe(150);
         expect(DEFAULT_CONFIG.animations).toBe(true);
         expect(DEFAULT_CONFIG.showSelectedItems).toBe(true);
         expect(DEFAULT_CONFIG.highlightSearchMatches).toBe(false);
@@ -54,7 +55,7 @@ describe('ConfigManager', () => {
     it('fills defaults from partial patch', () => {
         const cm = new ConfigManager({ items: [] });
         expect(cm.config.searchable).toBe(true);
-        expect(cm.config.mainWidth).toBe('100%');
+        expect(cm.config.mainWidth).toBe(150);
     });
 
     it('partial update keeps untouched values', () => {

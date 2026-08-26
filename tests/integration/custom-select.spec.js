@@ -178,6 +178,9 @@ test.describe('multi-instance & destroy', () => {
             document.body.append(host2);
             window.__sel2 = new window.__select.constructor(host2, {
                 items: [{ id: 'x', type: 'text', content: 'X only' }],
+                // во всю ширину body: иначе узкий (150px) триггер второго экземпляра
+                // попадает под popover первого и клик перехватывает поиск
+                mainWidth: '100%',
             });
         });
         // второй экземпляр уже создан — первый адресуем через .first() (DOM-порядок = порядок создания)

@@ -32,7 +32,11 @@ function section(title) {
     const box = section('Single / image');
     const host = document.createElement('div');
     box.append(host);
-    new CustomSelect(host, { items: makeImages(), searchable: false });
+    new CustomSelect(host, {
+        items: makeImages(),
+        searchable: false,
+        mainWidth: 60
+    });
 }
 
 // Multiple with tags/maxLines/clear/selectAll
@@ -47,6 +51,7 @@ function section(title) {
         maxLines: 2,
         showSelectAll: true,
         selectedIds: ['apple', 'banana'],
+        mainWidth: '100%'
     });
     const btn = document.createElement('button');
     btn.textContent = 'setValue([carrot, tomato])';

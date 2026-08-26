@@ -20,7 +20,7 @@
     --csel-transition: 0.15s ease-in-out;
     /* runtime-инъекции фасада (значения по умолчанию) */
     --csel-line-height: 36px;
-    --csel-main-width: 100%;
+    --csel-main-width: 150px;
     --csel-modal-max-height: 320px;
     --csel-columns: 1;
     --csel-column-gap: 8px;
@@ -62,7 +62,10 @@
     min-width: 0;
 }
 
-.csel-value-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Плейсхолдер ведёт себя как value-text: одна строка, невлезающий хвост
+   скрывается многоточием (перенос ломал бы высоту триггера на узкой ширине) */
+.csel-value-text,
+.csel-placeholder { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* image-значение: flex убирает базлайн-зазор и центрирует картинку по вертикали */
 .csel-value-text--image { display: inline-flex; align-items: center; }
 .csel-placeholder { color: var(--csel-text-muted); pointer-events: none; }
@@ -306,6 +309,13 @@
 .csel-option--selected { color: var(--csel-accent); }
 .csel-option--disabled { opacity: 0.45; cursor: not-allowed; }
 .csel-option-content { overflow: hidden; text-overflow: ellipsis; }
+/* image-опция без подписи: контент занимает свободную ширину строки,
+   картинка центрируется в нём (иначе прижата к левому краю) */
+.csel-option--image .csel-option-content {
+    flex: 1;
+    display: inline-flex;
+    justify-content: center;
+}
 
 .csel-checkbox {
     flex: 0 0 auto;

@@ -181,6 +181,9 @@ test.describe('regression: tag aligned top-left with maxLines>1', () => {
     test('first tag position is pixel-stable at any fill level', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=multiMax2');
         await page.waitForFunction(() => Boolean(window.__select));
+        // тест о вертикальном ритме первого тега: нужен широкий триггер, иначе при
+        // узком дефолте пилюли закономерно уходят за «...» и первый тег скрывается
+        await page.evaluate(() => window.__api.updateConfig({ mainWidth: 400 }));
 
         const metrics = () => page.evaluate(() => {
             const root = document.querySelector('.csel-root');
@@ -210,6 +213,9 @@ test.describe('regression: tag aligned top-left with maxLines>1', () => {
         await page.goto('/tests/integration/harness.html?case=multiMax2');
         await page.waitForFunction(() => Boolean(window.__select));
 
+        // тесту нужен широкий триггер (несколько тегов в строке) — задаём явно,
+        // дефолтная ширина 150px намеренно узкая
+        await page.evaluate(() => window.__api.updateConfig({ mainWidth: 400 }));
         // заполнить ОБЕ линии тегами одинаковой ширины
         await page.evaluate(() => window.__api.setValue([0, 1, 2, 3, 4, 5, 6]));
         await page.waitForTimeout(150);
@@ -416,6 +422,8 @@ test.describe('regression: more-button fills its line', () => {
     test('«...» matches pill height and is vertically centered on the line', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=overflowMulti');
         await page.waitForFunction(() => Boolean(window.__select));
+        // широкий триггер нужен, чтобы «...» завершал линию из нескольких тегов
+        await page.evaluate(() => window.__api.updateConfig({ mainWidth: 400 }));
         await page.evaluate(() => window.__api.selectAll());
         await page.waitForTimeout(200);
 
@@ -555,4 +563,133 @@ test.describe('regression: scroll semantics per column mode', () => {
         expect(m.sw).toBeGreaterThan(m.cw);
         expect(parseFloat(m.firstColW)).toBeGreaterThan(100);
     });
+});
+
+test.describe('regression: trigger width stability', () => {
+    test('default mainWidth: trigger width constant across placeholder and selections', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=widthFlex');
+        await page.waitForFunction(() => Boolean(window.__select));
+        const root = page.locator('.csel-root');
+
+        const wPlaceholder = (await root.boundingBox()).width;
+
+        await root.click();
+        await page.waitForSelector('.csel-popover:popover-open');
+        await page.locator('.csel-option', { hasText: 'Hi' }).first().click();
+        const wShort = (await root.boundingBox()).width;
+
+        await root.click();
+        await page.waitForSelector('.csel-popover:popover-open');
+        await page.locator('.csel-option', { hasText: 'Unbelievably long option title' }).first().click();
+        const wLong = (await root.boundingBox()).width;
+
+        // дефолтный mainWidth фиксирован в px: ширина не следует за текстом
+        expect(Math.abs(wShort - wPlaceholder)).toBeLessThan(0.5);
+        expect(Math.abs(wLong - wPlaceholder)).toBeLessThan(0.5);
+        expect(Math.abs(wPlaceholder - 150)).toBeLessThan(0.5);
+    });
+
+    test('explicit numeric mainWidth pins the width regardless of selection', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=widthFlex');
+        await page.waitForFunction(() => Boolean(window.__select));
+        await page.evaluate(() => window.__api.updateConfig({ mainWidth: 260 }));
+
+        const root = page.locator('.csel-root');
+        const w0 = (await root.boundingBox()).width;
+        await root.click();
+        await page.waitForSelector('.csel-popover:popover-open');
+        await page.locator('.csel-option', { hasText: 'Unbelievably long option title' }).first().click();
+        const w1 = (await root.boundingBox()).width;
+
+        expect(Math.abs(w0 - 260)).toBeLessThan(0.5);
+        expect(Math.abs(w1 - 260)).toBeLessThan(0.5);
+    });
+});
+
+test.describe('regression: narrow trigger overflow', () => {
+    test('placeholder stays on one line, overflow is clipped', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=basic');
+        await page.waitForFunction(() => Boolean(window.__select));
+        await page.evaluate(() => window.__api.updateConfig({ mainWidth: 60 }));
+
+        const m = await page.evaluate(() => {
+            const root = document.querySelector('.csel-root');
+            const ph = root.querySelector('.csel-placeholder');
+            const va = root.querySelector('.csel-value-area');
+            const pr = ph.getBoundingClientRect();
+            return {
+                phHeight: pr.height,
+                lineHeight: parseFloat(getComputedStyle(root).getPropertyValue('--csel-line-height')),
+                phRight: pr.right,
+                vaRight: va.getBoundingClientRect().right,
+                whiteSpace: getComputedStyle(ph).whiteSpace,
+            };
+        });
+
+        // не переносится: высота не больше одной линии
+        expect(m.phHeight).toBeLessThanOrEqual(m.lineHeight + 2);
+        // невлезающий хвост скрыт обрезкой, а не вылезает за триггер
+        expect(m.whiteSpace).toBe('nowrap');
+        expect(m.phRight).toBeLessThanOrEqual(m.vaRight + 1);
+    });
+
+    test('horizontally overflowing pills hide behind the «...» button', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=narrowMulti');
+        await page.waitForFunction(() => Boolean(window.__select));
+
+        const m = await page.evaluate(() => {
+            const root = document.querySelector('.csel-root');
+            const more = root.querySelector('.csel-more');
+            const va = root.querySelector('.csel-value-area');
+            const visible = [...root.querySelectorAll('.csel-tag')]
+                .filter((p) => getComputedStyle(p).display !== 'none');
+            return {
+                moreShown: !more.hidden,
+                visibleCount: visible.length,
+                // каждая видимая пилюля целиком внутри контентной области value-area
+                maxPillRight: Math.max(-1, ...visible.map((p) => p.getBoundingClientRect().right)),
+                vaContentRight: (() => {
+                    const r = va.getBoundingClientRect();
+                    const pad = parseFloat(getComputedStyle(va).paddingRight) || 0;
+                    return r.right - pad;
+                })(),
+            };
+        });
+
+        expect(m.moreShown).toBe(true);
+        expect(m.maxPillRight).toBeLessThanOrEqual(m.vaContentRight + 1);
+    });
+});
+
+test.describe('regression: image option alignment', () => {
+    for (const kase of ['singleImage', 'imagesPopover']) {
+        test(`[${kase}] image sits centered within the option row`, async ({ page }) => {
+            await page.goto(`/tests/integration/harness.html?case=${kase}`);
+            await page.waitForFunction(() => Boolean(window.__select));
+            await page.locator('.csel-root').click();
+            await page.waitForSelector('.csel-popover:popover-open');
+            await page.waitForTimeout(100);
+
+            const m = await page.evaluate(() => {
+                const opt = /** @type {HTMLElement} */ (document.querySelector('.csel-popover .csel-option'));
+                const img = opt.querySelector('.csel-img')?.getBoundingClientRect();
+                const content = opt.querySelector('.csel-option-content')?.getBoundingClientRect();
+                if (!img || !content || img.width === 0) return null;
+                return {
+                    // картинка по центру контентной области опции
+                    centerDelta: Math.abs((img.left + img.width / 2) - (content.left + content.width / 2)),
+                    // в single (без чекбокса) контент занимает всю строку → отступы равны
+                    leftGap: img.left - opt.getBoundingClientRect().left,
+                    rightGap: opt.getBoundingClientRect().right - img.right,
+                    multiple: opt.querySelector('.csel-checkbox') !== null,
+                };
+            });
+
+            expect(m).not.toBeNull();
+            expect(m.centerDelta).toBeLessThanOrEqual(1);
+            if (!m.multiple) {
+                expect(Math.abs(m.leftGap - m.rightGap)).toBeLessThanOrEqual(2);
+            }
+        });
+    }
 });

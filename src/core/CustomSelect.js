@@ -143,7 +143,7 @@ export default class CustomSelect {
         const c = this.#cfg();
         const rootStyle = this.#renderer.elements.root.style;
         rootStyle.setProperty('--csel-line-height', `${c.lineHeight}px`);
-        rootStyle.setProperty('--csel-main-width', typeof c.mainWidth === 'number' ? `${c.mainWidth}px` : (c.mainWidth ?? '100%'));
+        rootStyle.setProperty('--csel-main-width', typeof c.mainWidth === 'number' ? `${c.mainWidth}px` : (c.mainWidth ?? '150px'));
         rootStyle.setProperty('--csel-max-lines', String(c.maxLines));
         // multiple: высоту резервирует CSS-правило .csel-root--multiple .csel-value-area
         // (формула с учётом межстрочного ритма) — inline min-height здесь не нужен
@@ -900,12 +900,18 @@ export default class CustomSelect {
             // display:contents, его padding не влияет на раскладку пилюль.
             valueArea.style.paddingRight = reservePx > 0 ? `${reservePx}px` : '0';
             const limitTop = (c.lineHeight ?? 36) * (c.maxLines ?? 1);
+            // Правая граница контентной области: rect уже включает свежий padding-right,
+            // поэтому вычитаем его же. Пилюля шире области не переносится на новую
+            // строку, а обрезается по горизонтали — такое переполнение тоже обязанo
+            // прятать хвост за кнопкой «...».
+            const limitRight = valueArea.getBoundingClientRect().right - reservePx;
             let cutoff = pills.length;
             let anyBeyond = false;
             pills.forEach((pill, i) => {
                 const top = pill.offsetTop;
-                const beyond = top + pill.offsetHeight > limitTop + 1;
-                if (beyond) {
+                const beyondV = top + pill.offsetHeight > limitTop + 1;
+                const beyondH = pill.getBoundingClientRect().right > limitRight + 1;
+                if (beyondV || beyondH) {
                     anyBeyond = true;
                     if (i < cutoff) cutoff = i;
                 }

@@ -28,7 +28,7 @@ function buildDefaults() {
         placeholder: 'Select a value...',
         maxLines: 1,
         lineHeight: 36,
-        mainWidth: '100%',
+        mainWidth: 150,
         modalWidth: 'auto',
         modalMaxHeight: 320,
         modalOffset: 4,

@@ -451,6 +451,7 @@ export default class DomRenderer {
         const content = document.createElement('span');
         content.className = 'csel-option-content';
         if (item.type === 'image') {
+            el.classList.add('csel-option--image');
             const media = document.createElement('span');
             media.className = 'csel-option-media';
             const img = document.createElement('img');

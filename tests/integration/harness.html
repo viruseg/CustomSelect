@@ -63,12 +63,40 @@
         disabled: { items: baseItems, disabled: true },
         events: { items: baseItems, multiple: true },
         overflowBottom: { items: baseItems },
+        // Регрессия ширины триггера: flex-родитель сжимается по содержимому —
+        // дефолтная ширина не должна следовать за текстом пункта/плейсхолдера.
+        widthFlex: {
+            items: [
+                { id: 'short', type: 'text', content: 'Hi' },
+                ...baseItems,
+                { id: 'long', type: 'text', content: 'Unbelievably long option title for width probing' },
+            ],
+        },
+        // Узкий триггер: пилюля «Beta Gamma Delta» шире контентной области —
+        // переполнение только горизонтальное, строки maxLines не превышены.
+        narrowMulti: {
+            items: [
+                { id: 'a', type: 'text', content: 'Alpha' },
+                { id: 'b', type: 'text', content: 'Beta Gamma Delta' },
+            ],
+            multiple: true,
+            maxLines: 2,
+            selectedIds: ['a', 'b'],
+            showSelectAll: true,
+            mainWidth: 100,
+        },
     };
 
     if (kase === 'overflowBottom') {
         const spacer = document.createElement('div');
         spacer.style.height = 'calc(100vh - 120px)';
         document.body.prepend(spacer);
+    }
+
+    // widthFlex: body → flex-контейнер, #host теряет фикс. ширину и сжимается по содержимому
+    if (kase === 'widthFlex') {
+        document.body.style.display = 'flex';
+        document.getElementById('host').style.width = 'auto';
     }
 
     window.__select = new CustomSelect(document.getElementById('host'), cases[kase] ?? cases.basic, {
