@@ -5,6 +5,10 @@
  */
 
 /**
+ * @typedef {import('./core/CustomSelect.js').default} CustomSelect
+ */
+
+/**
  * Режим сопоставления поискового запроса с названиями опций:
  * - `'contains'` — подстрока;
  * - `'startsWith'` — начало строки;
@@ -333,49 +337,50 @@ export class CustomSelectConfig {
  * `new CustomSelect(target, config, events)`.
  *
  * Все обработчики опциональны; каждому событию соответствует
- * своё свойство.
+ * своё свойство. Первый аргумент каждого обработчика —
+ * инстанс `CustomSelect`, вызвавший событие.
  */
 export class SelectEvents {
     /**
      * Вызывается при выборе опции.
-     * @type {((item: CustomSelectItem) => Promise<void> | void)|undefined}
+     * @type {((instance: CustomSelect, item: CustomSelectItem) => Promise<void> | void)|undefined}
      */
     onSelect;
 
     /**
      * Вызывается при снятии выбора с опции.
-     * @type {((item: CustomSelectItem) => Promise<void> | void)|undefined}
+     * @type {((instance: CustomSelect, item: CustomSelectItem) => Promise<void> | void)|undefined}
      */
     onDeselect;
 
     /**
      * Вызывается при любом изменении набора выбранных опций.
-     * @type {((items: CustomSelectItem[]) => Promise<void> | void)|undefined}
+     * @type {((instance: CustomSelect, items: CustomSelectItem[]) => Promise<void> | void)|undefined}
      */
     onChange;
 
     /**
      * Вызывается после открытия списка.
-     * @type {(() => Promise<void> | void)|undefined}
+     * @type {((instance: CustomSelect) => Promise<void> | void)|undefined}
      */
     onOpen;
 
     /**
      * Вызывается после закрытия списка.
-     * @type {(() => Promise<void> | void)|undefined}
+     * @type {((instance: CustomSelect) => Promise<void> | void)|undefined}
      */
     onClose;
 
     /**
      * Вызывается на каждый ввод в поле поиска: `query` — текущий запрос,
      * `matched` — найденные опции.
-     * @type {((query: string, matched: CustomSelectItem[]) => Promise<void> | void)|undefined}
+     * @type {((instance: CustomSelect, query: string, matched: CustomSelectItem[]) => Promise<void> | void)|undefined}
      */
     onSearch;
 
     /**
      * Вызывается при полной очистке выбора кнопкой «Clear all».
-     * @type {(() => Promise<void> | void)|undefined}
+     * @type {((instance: CustomSelect) => Promise<void> | void)|undefined}
      */
     onClear;
 }

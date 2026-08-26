@@ -25,7 +25,7 @@ await select.updateConfig({
 const country = new CustomSelect('#country', { items: countries });
 const city = new CustomSelect('#city', { items: [], disabled: true });
 
-country.on('change', async ([selected]) => {
+country.on('change', async (_instance, [selected]) => {
     if (!selected) return;
     city.updateConfig({ loading: true });
     const cities = await fetchCities(selected.id);
@@ -130,9 +130,9 @@ document.querySelector('#host .csel-root').focus();
 ## Реакция на открытие/закрытие (аналитика)
 
 ```js
-select.on('open', () => analytics.track('select_opened'));
-select.on('close', () => analytics.track('select_closed'));
-select.on('search', (q) => {
+select.on('open', (_instance) => analytics.track('select_opened'));
+select.on('close', (_instance) => analytics.track('select_closed'));
+select.on('search', (_instance, q) => {
     if (q.length >= 3) analytics.track('search', { q });
 });
 ```

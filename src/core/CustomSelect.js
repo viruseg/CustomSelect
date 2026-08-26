@@ -62,6 +62,8 @@ export default class CustomSelect {
     /** @type {ResizeObserver|null} */
     #resizeObserver = null;
     #repositionRafId = 0;
+    /** @type {WeakMap<Function, Function>} */
+    #handlerMap = new WeakMap();
     /** Постоянная проводка (main/popover), снимается только в destroy. @type {Array<()=>void>} */
     #disposables = [];
     /** Скоуп активной фазы (открыт): document/window/proximity, снимается в deactivate и destroy. @type {Array<()=>void>} */
@@ -109,7 +111,13 @@ export default class CustomSelect {
             const rec = /** @type {Record<string, Function|undefined>} */ (/** @type {unknown} */ (events));
             for (const [alias, eventName] of Object.entries(EVENT_ALIASES)) {
                 const handler = rec[alias];
-                if (typeof handler === 'function') this.#emitter.on(eventName, handler);
+                if (typeof handler === 'function') {
+                    const self = this;
+                    /** @param {...unknown} args */
+                    const wrapped = function (...args) { return handler(self, ...args); };
+                    this.#handlerMap.set(handler, wrapped);
+                    this.#emitter.on(eventName, wrapped);
+                }
             }
         }
 
@@ -974,13 +982,18 @@ export default class CustomSelect {
     /** @param {string} event @param {Function} handler */
     on(event, handler) {
         this.#assertAlive();
-        this.#emitter.on(event, handler);
+        const self = this;
+        /** @param {...unknown} args */
+        const wrapped = function (...args) { return handler(self, ...args); };
+        this.#handlerMap.set(handler, wrapped);
+        this.#emitter.on(event, wrapped);
     }
 
     /** @param {string} event @param {Function} handler */
     off(event, handler) {
         this.#assertAlive();
-        this.#emitter.off(event, handler);
+        const wrapped = this.#handlerMap.get(handler);
+        this.#emitter.off(event, wrapped ?? handler);
     }
 
     /**

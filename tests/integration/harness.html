@@ -100,13 +100,13 @@
     }
 
     window.__select = new CustomSelect(document.getElementById('host'), cases[kase] ?? cases.basic, {
-        onSelect: (item) => window.dispatchEvent(new CustomEvent('csel-select', { detail: item.id })),
-        onDeselect: (item) => window.dispatchEvent(new CustomEvent('csel-deselect', { detail: item.id })),
-        onChange: (items) => window.dispatchEvent(new CustomEvent('csel-change', { detail: items.map((i) => i.id) })),
-        onOpen: () => window.dispatchEvent(new CustomEvent('csel-open')),
-        onClose: () => window.dispatchEvent(new CustomEvent('csel-close')),
-        onSearch: (q, matched) => window.dispatchEvent(new CustomEvent('csel-search', { detail: { q, n: matched.length } })),
-        onClear: () => window.dispatchEvent(new CustomEvent('csel-clear')),
+        onSelect: (_instance, item) => window.dispatchEvent(new CustomEvent('csel-select', { detail: item.id })),
+        onDeselect: (_instance, item) => window.dispatchEvent(new CustomEvent('csel-deselect', { detail: item.id })),
+        onChange: (_instance, items) => window.dispatchEvent(new CustomEvent('csel-change', { detail: items.map((i) => i.id) })),
+        onOpen: (_instance) => window.dispatchEvent(new CustomEvent('csel-open')),
+        onClose: (_instance) => window.dispatchEvent(new CustomEvent('csel-close')),
+        onSearch: (_instance, q, matched) => window.dispatchEvent(new CustomEvent('csel-search', { detail: { q, n: matched.length } })),
+        onClear: (_instance) => window.dispatchEvent(new CustomEvent('csel-clear')),
     });
 
     window.__api = window.__select;

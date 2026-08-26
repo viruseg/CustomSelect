@@ -138,28 +138,28 @@ items: [
 
 ## События
 
-Все колбэки поддерживают `async` и выполняются последовательно:
+Все колбэки поддерживают `async` и выполняются последовательно. Первый аргумент каждого обработчика — инстанс `CustomSelect`, вызвавший событие:
 
 ```js
 const select = new CustomSelect('#el', {
     items,
 }, {
-    onSelect(item)   { console.log('выбран', item.id); },
-    onChange(items)  { console.log('текущий выбор:', items.map(i => i.id)); },
+    onSelect(instance, item)   { console.log('выбран', item.id, 'в', instance); },
+    onChange(instance, items)  { console.log('текущий выбор:', items.map(i => i.id)); },
 });
 
 // или динамически:
-select.on('change', (items) => { /* ... */ });
+select.on('change', (instance, items) => { /* ... */ });
 ```
 
-| Событие | Аргумент | Когда |
+| Событие | Аргументы | Когда |
 |---|---|---|
-| `select` | item | Выбран элемент |
-| `deselect` | item | Снят выбор |
-| `change` | items[] | Любое изменение выбора |
-| `open` / `close` | — | Открытие / закрытие списка |
-| `search` | query, matched[] | Изменение поискового запроса |
-| `clear` | — | Массовая очистка |
+| `select` | `instance`, `item` | Выбран элемент |
+| `deselect` | `instance`, `item` | Снят выбор |
+| `change` | `instance`, `items[]` | Любое изменение выбора |
+| `open` / `close` | `instance` | Открытие / закрытие списка |
+| `search` | `instance`, `query`, `matched[]` | Изменение поискового запроса |
+| `clear` | `instance` | Массовая очистка |
 
 ## Публичный API
 

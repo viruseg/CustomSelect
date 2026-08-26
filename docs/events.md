@@ -6,37 +6,39 @@
 
 ```js
 const select = new CustomSelect('#host', { items }, {
-    onSelect: (item) => {},
-    onDeselect: (item) => {},
-    onChange: (items) => {},
-    onOpen: () => {},
-    onClose: () => {},
-    onSearch: (query, matched) => {},
-    onClear: () => {},
+    onSelect: (instance, item) => {},
+    onDeselect: (instance, item) => {},
+    onChange: (instance, items) => {},
+    onOpen: (instance) => {},
+    onClose: (instance) => {},
+    onSearch: (instance, query, matched) => {},
+    onClear: (instance) => {},
 });
 ```
 
 **Динамически** через публичные методы:
 
 ```js
-const handler = (items) => console.log(items);
+const handler = (instance, items) => console.log(items);
 select.on('change', handler);
 select.off('change', handler);
 ```
 
 Имена событий: `'select'`, `'deselect'`, `'change'`, `'open'`, `'close'`, `'search'`, `'clear'`.
 
+Первый аргумент каждого обработчика — инстанс `CustomSelect`, вызвавший событие.
+
 ## Payload'ы
 
 | Событие | Аргументы | Описание |
 |---|---|---|
-| `select` | `item: CustomSelectItem` | Выбран один элемент |
-| `deselect` | `item: CustomSelectItem` | Снят выбор с одного элемента |
-| `change` | `items: CustomSelectItem[]` | Итоговый выбор после любой мутации — в порядке выбора |
-| `open` | — | Popover открылся |
-| `close` | — | Popover закрылся |
-| `search` | `query: string`, `matched: CustomSelectItem[]` | Изменился поисковый запрос; `matched` — текущие результаты |
-| `clear` | — | Массовая очистка выбора |
+| `select` | `instance: CustomSelect`, `item: CustomSelectItem` | Выбран один элемент |
+| `deselect` | `instance: CustomSelect`, `item: CustomSelectItem` | Снят выбор с одного элемента |
+| `change` | `instance: CustomSelect`, `items: CustomSelectItem[]` | Итоговый выбор после любой мутации — в порядке выбора |
+| `open` | `instance: CustomSelect` | Popover открылся |
+| `close` | `instance: CustomSelect` | Popover закрылся |
+| `search` | `instance: CustomSelect`, `query: string`, `matched: CustomSelectItem[]` | Изменился поисковый запрос; `matched` — текущие результаты |
+| `clear` | `instance: CustomSelect` | Массовая очистка выбора |
 
 ## Порядок эмиссии
 
@@ -85,10 +87,10 @@ Popover остаётся открытым.
 Обработчики могут быть async и выполняются **строго последовательно** в порядке регистрации:
 
 ```js
-select.on('save', async () => {
+select.on('save', async (instance) => {
     await fetch('/api', { method: 'POST' }); // следующий обработчик ждёт этот
 });
-select.on('save', () => console.log('выполнится после fetch'));
+select.on('save', (instance) => console.log('выполнится после fetch'));
 ```
 
 Исключение в обработчике **не ломает компонент**:
@@ -100,7 +102,7 @@ select.on('save', () => console.log('выполнится после fetch'));
 
 ```js
 select.on('select', () => { throw new Error('упс'); });
-select.on('select', () => console.log('всё равно выполнюсь')); // ✓
+select.on('select', (instance) => console.log('всё равно выполнюсь')); // ✓
 ```
 
 Повторная регистрация одного и того же обработчика на одно событие — no-op (Set-семантика).
@@ -112,7 +114,7 @@ const select = new CustomSelect('#host', {
     items,
     multiple: true,
 }, {
-    onChange: async (items) => {
+    onChange: async (_instance, items) => {
         await fetch('/api/user/tags', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },

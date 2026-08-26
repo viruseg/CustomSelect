@@ -23,8 +23,8 @@ new CustomSelect(target, config?, events?)
 
 ```js
 const select = new CustomSelect('#host', { items }, {
-    onSelect: (item) => console.log(item.id),
-    onChange: (items) => saveToServer(items),
+    onSelect: (instance, item) => console.log(item.id),
+    onChange: (instance, items) => saveToServer(items),
 });
 ```
 
@@ -146,6 +146,14 @@ await select.updateConfig({ className: 'my-class', attributes: { 'data-id': 'x' 
 ```js
 select.on('change', handler);  // динамическая подписка
 select.off('change', handler); // снятие
+```
+
+Первый аргумент обработчика — инстанс `CustomSelect`, вызвавший событие:
+
+```js
+select.on('change', (instance, items) => {
+    console.log('Изменение в', instance, items);
+});
 ```
 
 Имена событий: `'select' | 'deselect' | 'change' | 'open' | 'close' | 'search' | 'clear'`. Полное описание — [events.md](events.md).

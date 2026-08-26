@@ -2,7 +2,7 @@ import { CustomSelect } from '../src/index.js';
 import { makeFruits, makeImages, makeMany } from './data.js';
 
 /** @param {string} name */
-const log = (name) => (/** @type {string} */ event, /** @type {unknown} */ payload) =>
+const log = (name) => (/** @type {unknown} */ _instance, /** @type {string} */ event, /** @type {unknown} */ payload) =>
     console.info(`[${name}] ${event}`, payload);
 
 /** @param {string} title */
