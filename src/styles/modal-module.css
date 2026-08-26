@@ -186,3 +186,25 @@
     visibility: hidden !important;
     pointer-events: none !important;
 }
+
+/* ── Скроллбар: тонкий, в цветах темы ─────────────────────────────── */
+.csel-listbox {
+    scrollbar-width: thin;
+    scrollbar-color: var(--csel-border) transparent;
+}
+.csel-listbox::-webkit-scrollbar { width: 8px; height: 8px; }
+.csel-listbox::-webkit-scrollbar-track { background: transparent; }
+.csel-listbox::-webkit-scrollbar-thumb {
+    background-color: var(--csel-border);
+    border-radius: 999px;
+}
+.csel-listbox::-webkit-scrollbar-thumb:hover { background-color: var(--csel-text-muted); }
+.csel-listbox::-webkit-scrollbar-corner { background: transparent; }
+
+/* ── Горизонтальная прокрутка колонок: дискретное пролистывание ──────
+   Каждая опция объявляет snap-точку «по старту»; опции одной колонки
+   имеют одинаковый x-offset, поэтому решётка привязки = границы колонок.
+   Заголовки групп на всю ширину сетки в привязке не участвуют. */
+.csel-listbox--grid { scroll-snap-type: x mandatory; }
+.csel-listbox--grid .csel-option { scroll-snap-align: start; }
+.csel-listbox--grid .csel-group-header { scroll-snap-align: none; }

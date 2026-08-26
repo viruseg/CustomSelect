@@ -129,6 +129,31 @@
 - Число строк сетки библиотека вычисляет из доступной высоты и выставляет сама (`grid-template-rows`) — без явных строк `grid-auto-flow: column` не переносит элементы вниз.
 - Заголовки групп растягиваются на всю ширину сетки (`grid-column: 1/-1`).
 
+## Скроллбар
+
+Скроллбар списка — тонкий (8px / `scrollbar-width: thin`) и раскрашенный токенами темы: ползунок `--csel-border`, при наведении `--csel-text-muted`, дорожка прозрачная. Кастомизация:
+
+```css
+.csel-listbox {
+    scrollbar-color: var(--csel-accent) transparent; /* Firefox */
+}
+.csel-listbox::-webkit-scrollbar-thumb {
+    background-color: var(--csel-accent);            /* Chromium/Safari */
+}
+```
+
+## Дискретная прокрутка колонок (scroll-snap)
+
+В многоколоночном режиме горизонтальная прокрутка не плавает пикселями, а «прилипает» к границам колонок:
+
+```css
+.csel-listbox--grid { scroll-snap-type: x mandatory; }
+.csel-listbox--grid .csel-option { scroll-snap-align: start; }
+.csel-listbox--grid .csel-group-header { scroll-snap-align: none; }
+```
+
+Все опции одной колонки имеют одинаковый x-offset, поэтому решётка привязки совпадает с границами колонок: каждое прокручивание завершается выровненной позицией. Заголовки групп (на всю ширину сетки) в привязке не участвуют. В одноколоночном режиме snap отключён — вертикальная прокрутка свободная.
+
 ## Изображения в опциях
 
 Картинки сохраняют пропорции (`object-fit: contain`) и вписываются в бокс опции. Растянуть медиа-зону можно так:

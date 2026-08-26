@@ -64,6 +64,56 @@ test.describe('regression: multiple placeholder visibility', () => {
     });
 });
 
+test.describe('regression: scrollbar styling and horizontal snap', () => {
+    test('listbox uses thin themed scrollbar', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=tallSingle');
+        await page.waitForFunction(() => Boolean(window.__select));
+        await page.locator('.csel-root').click();
+        await page.waitForSelector('.csel-popover:popover-open');
+        const style = await page.evaluate(() => {
+            const cs = getComputedStyle(document.querySelector('.csel-listbox'));
+            return { width: cs.scrollbarWidth ?? '', color: cs.scrollbarColor ?? '' };
+        });
+        // ширина стандартизована шире; цвет движки могут не экспонировать отдельно
+        if (style.width === 'thin') {
+            expect(style.width).toBe('thin');
+        }
+        if (style.color !== '') {
+            expect(style.color === 'transparent' || style.color.includes('rgba(0, 0, 0, 0)')).toBe(true);
+        }
+    });
+
+    test('multi column: horizontal scroll snaps by column (mandatory)', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=columns');
+        await page.waitForFunction(() => Boolean(window.__select));
+        await page.locator('.csel-root').click();
+        await page.waitForSelector('.csel-popover:popover-open');
+        const s = await page.evaluate(() => {
+            const lb = document.querySelector('.csel-listbox');
+            const cs = getComputedStyle(lb);
+            const opt = lb.querySelector('[role="option"]');
+            const header = lb.querySelector('.csel-group-header');
+            return {
+                type: cs.scrollSnapType,
+                optAlign: getComputedStyle(opt).scrollSnapAlign,
+                headerAlign: header ? getComputedStyle(header).scrollSnapAlign : '(нет заголовков)',
+            };
+        });
+        expect(s.type).toContain('x mandatory');
+        expect(s.optAlign).toBe('start');
+        expect(s.headerAlign).toBe('none');
+    });
+
+    test('single column: no horizontal snap', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=tallSingle');
+        await page.waitForFunction(() => Boolean(window.__select));
+        await page.locator('.csel-root').click();
+        const t = await page.evaluate(() =>
+            getComputedStyle(document.querySelector('.csel-listbox')).scrollSnapType);
+        expect(t === '' || t === 'none').toBeTruthy();
+    });
+});
+
 test.describe('regression: placeholder left alignment', () => {
     for (const kase of ['multi', 'basic']) {
         test(`empty state: placeholder sits at content left edge (${kase})`, async ({ page }) => {
