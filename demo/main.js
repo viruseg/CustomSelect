@@ -1,4 +1,4 @@
-import CustomSelect from '../src/core/CustomSelect.js';
+import { CustomSelect } from '../src/index.js';
 import { makeFruits, makeImages, makeMany } from './data.js';
 
 /** @param {string} name */

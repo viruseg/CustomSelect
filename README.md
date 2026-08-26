@@ -3,7 +3,7 @@
 Современная замена стандартному HTML `<select>`: кастомный интерфейс выбора на **HTML Popover API**, без зависимостей, только для современных браузеров.
 
 ```js
-import CustomSelect from 'custom-select';
+import { CustomSelect } from 'custom-select';
 import 'custom-select/index.css';
 
 const select = new CustomSelect('#city', {
@@ -54,8 +54,8 @@ npm install git+https://example.com/user/custom-select.git
 После установки работают оба импорта:
 
 ```js
-import CustomSelect from 'custom-select';            // класс
-import CustomSelect, { VERSION } from 'custom-select'; // + версия
+import { CustomSelect } from 'custom-select';            // класс
+import { CustomSelect, VERSION } from 'custom-select'; // + версия
 ```
 
 > **Стили обязательны.** Подключите их тегом в HTML:
@@ -73,7 +73,7 @@ import CustomSelect, { VERSION } from 'custom-select'; // + версия
 ```html
 <div id="fruit"></div>
 <script type="module">
-    import CustomSelect from 'custom-select';
+    import { CustomSelect } from 'custom-select';
     import 'custom-select/index.css';
 
     const select = new CustomSelect('#fruit', {

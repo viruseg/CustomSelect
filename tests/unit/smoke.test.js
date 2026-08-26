@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import CustomSelect, { VERSION } from '../../src/index.js';
+import { CustomSelect, VERSION } from '../../src/index.js';
 
 describe('smoke', () => {
     it('exposes version', () => {

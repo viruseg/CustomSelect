@@ -9,7 +9,7 @@
 <body>
 <div id="host"></div>
 <script type="module">
-    import CustomSelect from '/src/index.js';
+    import { CustomSelect } from '/src/index.js';
 
     const params = new URLSearchParams(location.search);
     const kase = params.get('case') ?? 'basic';

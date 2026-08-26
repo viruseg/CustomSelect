@@ -1048,3 +1048,5 @@ export default class CustomSelect {
         this.#activeId = null;
     }
 }
+
+export { CustomSelect };

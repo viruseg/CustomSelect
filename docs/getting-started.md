@@ -40,7 +40,7 @@ npm install git+https://example.com/user/custom-select.git
     <div id="city"></div>
 
     <script type="module">
-        import CustomSelect from 'custom-select';
+        import { CustomSelect } from 'custom-select';
 
         const select = new CustomSelect('#city', {
             items: [
