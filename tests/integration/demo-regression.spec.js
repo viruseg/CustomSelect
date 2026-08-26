@@ -74,8 +74,9 @@ test.describe('regression: click on empty area toggles popover', () => {
         await page.locator('.csel-root').click();
         await expect(pop).toBeVisible();
 
-        // клик по плейсхолдеру закрывает
-        await page.locator('.csel-root .csel-placeholder').click();
+        // клик по зоне плейсхолдера закрывает (у плейсхолдера pointer-events:none —
+        // клики физически принимает родительская value-area, это и есть «пустое место»)
+        await page.locator('.csel-root .csel-value-area').click();
         await expect(pop).not.toBeVisible();
 
         // повторный клик по пустому месту снова открывает
