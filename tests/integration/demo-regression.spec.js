@@ -321,14 +321,14 @@ test.describe('regression: more-button fills its line', () => {
         const m = await page.evaluate(() => {
             const root = document.querySelector('.csel-root');
             const more = root.querySelector('.csel-more').getBoundingClientRect();
-            const pill = [...root.querySelectorAll('.csel-tag')]
-                .find((p) => getComputedStyle(p).display !== 'none')
-                .getBoundingClientRect();
+            const vis = [...root.querySelectorAll('.csel-tag')]
+                .filter((p) => getComputedStyle(p).display !== 'none')
+                .map((p) => p.getBoundingClientRect());
             return {
                 moreH: Math.round(more.height),
-                pillH: Math.round(pill.height),
-                // центр кнопки против центра пилюли той же линии
-                centerDelta: Math.abs((more.y + more.height / 2) - (pill.y + pill.height / 2)),
+                pillH: Math.round(vis[0].height),
+                // кнопка завершает ПОСЛЕДНЮЮ линию — сравниваем с её соседкой
+                centerDelta: Math.abs((more.y + more.height / 2) - (vis.at(-1).y + vis.at(-1).height / 2)),
             };
         });
         expect(Math.abs(m.moreH - m.pillH)).toBeLessThanOrEqual(1);
