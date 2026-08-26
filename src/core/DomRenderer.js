@@ -439,9 +439,11 @@ export default class DomRenderer {
             el.classList.add('csel-option--disabled');
             el.setAttribute('aria-disabled', 'true');
         }
+        if (item.type === 'image') el.classList.add('csel-option--image');
         if (p.selected) el.classList.add('csel-option--selected');
 
-        if (p.multiple) {
+        // Чекбокс — для текстовых опций multiple; image-опция по ширине равна картинке
+        if (p.multiple && item.type !== 'image') {
             const checkbox = document.createElement('span');
             checkbox.className = 'csel-checkbox';
             checkbox.setAttribute('aria-hidden', 'true');

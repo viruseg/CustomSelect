@@ -369,6 +369,28 @@ test.describe('regression: selected image vertically centered', () => {
     });
 });
 
+test.describe('regression: image option hugs image, image centered', () => {
+    test('option width fits image; image centered vertically', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=imagesPopover');
+        await page.waitForFunction(() => Boolean(window.__select));
+        await page.locator('.csel-root').click();
+        await page.waitForSelector('.csel-popover:popover-open');
+
+        const m = await page.evaluate(() => {
+            const opt = document.querySelector('.csel-listbox [role="option"]').getBoundingClientRect();
+            const img = document.querySelector('.csel-listbox [role="option"] img').getBoundingClientRect();
+            return {
+                emptyW: opt.width - img.width,
+                centerDelta: Math.abs((opt.y + opt.height / 2) - (img.y + img.height / 2)),
+            };
+        });
+        // опция = картинка + горизонтальные паддинги
+        expect(m.emptyW).toBeLessThanOrEqual(18);
+        // вертикальный центр
+        expect(m.centerDelta).toBeLessThanOrEqual(1);
+    });
+});
+
 test.describe('regression: image options render image only', () => {
     test('popover image option has no text label, keeps aria-label', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=imagesPopover');

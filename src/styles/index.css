@@ -328,11 +328,18 @@
 .csel-option--selected .csel-checkbox::after { content: '✓'; }
 
 .csel-option-media {
-    display: inline-flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     height: calc(var(--csel-line-height) - 12px);
     width: calc(var(--csel-line-height) - 12px);
     flex: 0 0 auto;
 }
+
+/* image-опция: элемент по ширине ровно вместит картинку */
+.csel-option--image { width: fit-content; }
+.csel-listbox--grid .csel-option--image { justify-self: start; }
+.csel-option--image .csel-img { display: block; }
 
 .csel-hl { background: var(--csel-accent); color: #fff; border-radius: 2px; padding: 0 1px; }
 
