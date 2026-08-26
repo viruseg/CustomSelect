@@ -177,6 +177,29 @@ test.describe('regression: scrollbar styling and horizontal snap', () => {
     });
 });
 
+test.describe('regression: no text selection on placeholder/buttons', () => {
+    test('placeholder and every trigger button are user-select:none', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=multiMax2');
+        await page.waitForFunction(() => Boolean(window.__select));
+        await page.evaluate(() => window.__api.setValue([0]));
+
+        const sel = await page.evaluate(() => {
+            const q = (s) => document.querySelector(s);
+            const us = (el) => getComputedStyle(el).userSelect;
+            return {
+                placeholder: us(q('.csel-root .csel-placeholder')),
+                clear: us(q('.csel-root .csel-clear')),
+                more: us(q('.csel-root .csel-more')),
+                toggle: us(q('.csel-root .csel-toggle')),
+                tagRemove: us(q('.csel-root .csel-tag-remove')),
+            };
+        });
+        for (const [name, value] of Object.entries(sel)) {
+            expect(value, name).toBe('none');
+        }
+    });
+});
+
 test.describe('regression: compact search field', () => {
     test('search input is visibly shorter than option line height', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=basic');

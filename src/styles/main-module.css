@@ -113,3 +113,7 @@
 /* all:unset стирает UA-правило [hidden]{display:none} — восстанавливаем явно */
 .csel-more[hidden],
 .csel-clear[hidden] { display: none; }
+
+/* Плейсхолдер и кнопки триггера не выделяются мышкой */
+.csel-placeholder,
+.csel-root button { user-select: none; }
