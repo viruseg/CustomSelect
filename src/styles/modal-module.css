@@ -21,10 +21,10 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 8px;
+    padding: 4px 8px;
     border-bottom: 1px solid var(--csel-divider);
 }
-.csel-search-icon { color: var(--csel-text-muted); }
+.csel-search-icon { color: var(--csel-text-muted); font-size: 14px; }
 .csel-search-input {
     flex: 1;
     min-width: 0;
@@ -32,8 +32,9 @@
     border: none;
     outline: none;
     color: var(--csel-text);
-    font-size: 14px;
-    height: var(--csel-line-height);
+    font-size: 13px;
+    /* компактная строка поиска: заметно ниже опций списка */
+    height: calc(var(--csel-line-height) - 12px);
 }
 .csel-search-input::placeholder { color: var(--csel-text-muted); }
 .csel-search-input:disabled { opacity: 0.5; }

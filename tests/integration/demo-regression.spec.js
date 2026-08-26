@@ -177,6 +177,27 @@ test.describe('regression: scrollbar styling and horizontal snap', () => {
     });
 });
 
+test.describe('regression: compact search field', () => {
+    test('search input is visibly shorter than option line height', async ({ page }) => {
+        await page.goto('/tests/integration/harness.html?case=basic');
+        await page.waitForFunction(() => Boolean(window.__select));
+        await page.locator('.csel-root').click();
+        await page.waitForSelector('.csel-popover:popover-open');
+
+        const m = await page.evaluate(() => {
+            const input = document.querySelector('.csel-search-input');
+            const header = document.querySelector('.csel-search-header');
+            return {
+                inputH: parseFloat(getComputedStyle(input).height),
+                lineH: 36,
+                headerPadY: getComputedStyle(header).paddingTop,
+            };
+        });
+        expect(m.inputH).toBeLessThan(m.lineH);
+        expect(m.inputH).toBeGreaterThanOrEqual(18);
+    });
+});
+
 test.describe('regression: constant height with maxLines', () => {
     test('multiple select reserves maxLines height immediately and keeps it', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=multiMax2');
