@@ -54,6 +54,18 @@ npm install git+https://example.com/user/custom-select.git
 </html>
 ```
 
+Асинхронная альтернатива — `createInstance`. Ждёт, пока DOM гарантированно отрисован, после чего корень доступен через `querySelectorAll`:
+
+```js
+const select = await CustomSelect.createInstance('#city', {
+    items: [
+        { id: 'msk', type: 'text', content: 'Москва' },
+        { id: 'spb', type: 'text', content: 'Санкт-Петербург' },
+        { id: 'kzn', type: 'text', content: 'Казань' },
+    ],
+});
+```
+
 Без сборщика то же самое через importmap:
 
 ```html

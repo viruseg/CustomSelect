@@ -52,6 +52,32 @@ if (select) {
 
 Используется для получения инстанса по DOM-узлу, например, внутри обработчиков событий или при работе с динамически создаваемыми компонентами.
 
+### createInstance(target, config, events?)
+
+```js
+const select = await CustomSelect.createInstance('#host', { items });
+```
+
+Асинхронный хелпер: создаёт инстанс и ждёт, пока DOM гарантированно отрисован в родителе. После `await` элемент доступен через `querySelectorAll` и другие DOM-запросы.
+
+| Аргумент | Тип                 | Описание |
+| --- | --- | --- |
+| `target` | `HTMLElement \| string` | Элемент-хост или CSS-селектор (как в конструкторе) |
+| `config` | `CustomSelectConfig` | Конфигурация |
+| `events` | `SelectEvents` | Объект колбэков (опционально) |
+
+Возвращает `Promise<CustomSelect>`. Ошибки — те же, что и у конструктора.
+
+Двойной `requestAnimationFrame` гарантирует, что браузер завершил layout перед возвратом:
+
+```js
+// DOM корня доступен сразу после await
+const select = await CustomSelect.createInstance('#city', { items });
+const root = document.querySelector('.csel-root'); // ← найдёт
+```
+
+Используйте вместо `new CustomSelect(...)` когда нужно убедиться, что DOM-дерево готово к запросам (например, при инициализации SSR-рендера или в тестах).
+
 ## Управление списком
 
 ### open() / close() / toggle()

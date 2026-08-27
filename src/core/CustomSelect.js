@@ -1189,6 +1189,21 @@ export default class CustomSelect {
         return inst ?? null;
     }
 
+    /**
+     * Асинхронный хелпер: создаёт инстанс и ждёт, пока DOM гарантированно
+     * отрисован в родителе — после `await`.
+     *
+     * @param {HTMLElement|string} target
+     * @param {CustomSelectConfig} config
+     * @param {SelectEvents} [events]
+     * @returns {Promise<CustomSelect>}
+     */
+    static async createInstance(target, config, events) {
+        const instance = new CustomSelect(target, config, events);
+        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        return instance;
+    }
+
     destroy() {
         if (this.#destroyed) throw new Error('CustomSelect instance has already been destroyed.');
         this.#destroyed = true;
