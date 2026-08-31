@@ -4,14 +4,14 @@
 
 /* ══════════ VARIABLES ══════════ */
 :root {
-    --csel-bg-main: #18181b;
+    --csel-bg-main: #222;
     --csel-bg-hover: #27272a;
-    --csel-bg-modal: #121214;
+    --csel-bg-modal: #282a36;
     --csel-border: #3f3f46;
     --csel-border-focus: #6366f1;
-    --csel-text: #f4f4f5;
+    --csel-text: #cacaca;
     --csel-text-muted: #a1a1aa;
-    --csel-accent: #6366f1;
+    --csel-accent: #6cbaff;
     --csel-accent-hover: #4f46e5;
     --csel-tag-bg: #27272a;
     --csel-tag-border: #52525b;
