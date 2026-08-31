@@ -237,6 +237,7 @@
     padding: 6px 8px;
     border-bottom: 1px solid var(--csel-divider);
 }
+.csel-batch:not(:has(:not([hidden]))) { display: none; }
 .csel-select-all,
 .csel-clear-all {
     all: unset;
