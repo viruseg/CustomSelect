@@ -219,6 +219,8 @@
 }
 .csel-search-input::placeholder { color: var(--csel-text-muted); }
 .csel-search-input:disabled { opacity: 0.5; }
+.csel-search-input::-webkit-search-cancel-button { display: none; }
+.csel-search-input::-moz-search-cancel-button { display: none; }
 .csel-search-clear {
     all: unset;
     cursor: pointer;
