@@ -287,11 +287,15 @@ export default class CustomSelect {
                 return;
             }
             this.#openIntent = 'pointer';
-            // Значение/тег: семантика спеки §22 — открыть (без закрытия).
+            // Значение/тег: открыть, либо закрыть, если модалка уже открыта.
             // Плейсхолдер и пустое место: переключить открытие/закрытие.
             const onValue = t.closest('.csel-tag') || t.closest('.csel-value-text');
-            if (onValue) void this.open();
-            else void this.toggle();
+            if (onValue) {
+                if (this.#openState === 'open' || this.#openState === 'opening') void this.close();
+                else void this.open();
+            } else {
+                void this.toggle();
+            }
         };
 
         /** Средняя кнопка на теге — снятие выбора, как у кнопки «×» (спека: как remove). */

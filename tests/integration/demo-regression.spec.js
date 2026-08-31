@@ -84,7 +84,7 @@ test.describe('regression: click on empty area toggles popover', () => {
         await expect(pop).toBeVisible();
     });
 
-    test('click on selected value keeps popover open (spec §22)', async ({ page }) => {
+    test('click on selected value closes an open popover', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=single');
         await page.waitForFunction(() => Boolean(window.__select));
         const pop = page.locator('.csel-popover');
@@ -92,7 +92,10 @@ test.describe('regression: click on empty area toggles popover', () => {
         // single уже со значением: первый клик по нему открывает
         await page.locator('.csel-root .csel-value-text').click();
         await expect(pop).toBeVisible();
-        // повторный клик по значению НЕ закрывает (семантика open)
+        // повторный клик по значению закрывает открытую модалку
+        await page.locator('.csel-root .csel-value-text').click();
+        await expect(pop).not.toBeVisible();
+        // ещё один клик снова открывает
         await page.locator('.csel-root .csel-value-text').click();
         await expect(pop).toBeVisible();
     });
