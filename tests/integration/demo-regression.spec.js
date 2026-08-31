@@ -255,7 +255,10 @@ test.describe('regression: no text selection on placeholder/buttons', () => {
 
         const sel = await page.evaluate(() => {
             const q = (s) => document.querySelector(s);
-            const us = (el) => getComputedStyle(el).userSelect;
+            const us = (el) => {
+                const cs = getComputedStyle(el);
+                return cs.userSelect || cs.webkitUserSelect;
+            };
             return {
                 placeholder: us(q('.csel-root .csel-placeholder')),
                 clear: us(q('.csel-root .csel-uncheck')),
