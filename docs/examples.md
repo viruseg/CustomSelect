@@ -45,7 +45,7 @@ const tags = new CustomSelect('#tags', {
     multiple: true,
     maxLines: 2,
     selectedIds: draft.tagIds ?? [], // восстановление черновика
-    showSelectAll: false,
+    showCheckAll: false,
 });
 
 window.addEventListener('beforeunload', () => {

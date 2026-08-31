@@ -7,15 +7,15 @@ test.describe('regression: empty single select chrome', () => {
         await page.goto('/tests/integration/harness.html?case=basic');
         await page.waitForFunction(() => Boolean(window.__select));
         await expect(page.locator('.csel-root .csel-more')).toBeHidden();
-        await expect(page.locator('.csel-root .csel-clear')).toBeHidden();
+        await expect(page.locator('.csel-root .csel-uncheck')).toBeHidden();
     });
 
     test('single-mode popover hides batch buttons, keeps search', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=basic');
         await page.waitForFunction(() => Boolean(window.__select));
         await page.locator('.csel-root').click();
-        await expect(page.locator('.csel-select-all')).toBeHidden();
-        await expect(page.locator('.csel-clear-all')).toBeHidden();
+        await expect(page.locator('.csel-check-all')).toBeHidden();
+        await expect(page.locator('.csel-uncheck-all')).toBeHidden();
         await expect(page.locator('.csel-search-header')).toBeVisible();
     });
 });
@@ -255,7 +255,7 @@ test.describe('regression: no text selection on placeholder/buttons', () => {
             const us = (el) => getComputedStyle(el).userSelect;
             return {
                 placeholder: us(q('.csel-root .csel-placeholder')),
-                clear: us(q('.csel-root .csel-clear')),
+                clear: us(q('.csel-root .csel-uncheck')),
                 more: us(q('.csel-root .csel-more')),
                 toggle: us(q('.csel-root .csel-toggle')),
                 tagRemove: us(q('.csel-root .csel-tag-remove')),
@@ -339,24 +339,24 @@ test.describe('regression: more-button uses svg dots', () => {
 });
 
 test.describe('regression: single mode has no clear button', () => {
-    test('× hidden in single mode, appears in multiple; clear() API still works', async ({ page }) => {
+    test('× hidden in single mode, appears in multiple; uncheckAll() API still works', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=single');
         await page.waitForFunction(() => Boolean(window.__select));
 
         // single + выбранный элемент: крестика нет
-        await expect(page.locator('.csel-root .csel-clear')).toBeHidden();
+        await expect(page.locator('.csel-root .csel-uncheck')).toBeHidden();
 
         // переключили в multiple — крестик появился (выбор сохранился)
         await page.evaluate(() => window.__api.updateConfig({ multiple: true }));
-        await expect(page.locator('.csel-root .csel-clear')).toBeVisible();
+        await expect(page.locator('.csel-root .csel-uncheck')).toBeVisible();
         expect(await page.evaluate(() => window.__api.getValue().length)).toBe(1);
 
         // вернулись в single — крестик снова скрыт
         await page.evaluate(() => window.__api.updateConfig({ multiple: false }));
-        await expect(page.locator('.csel-root .csel-clear')).toBeHidden();
+        await expect(page.locator('.csel-root .csel-uncheck')).toBeHidden();
 
-        // публичный clear() в single работает как прежде
-        await page.evaluate(() => window.__api.clear());
+        // публичный uncheckAll() в single работает как прежде
+        await page.evaluate(() => window.__api.uncheckAll());
         expect(await page.evaluate(() => window.__api.getValue())).toEqual([]);
     });
 });
@@ -424,7 +424,7 @@ test.describe('regression: more-button fills its line', () => {
         await page.waitForFunction(() => Boolean(window.__select));
         // широкий триггер нужен, чтобы «...» завершал линию из нескольких тегов
         await page.evaluate(() => window.__api.updateConfig({ mainWidth: 400 }));
-        await page.evaluate(() => window.__api.selectAll());
+        await page.evaluate(() => window.__api.checkAll());
         await page.waitForTimeout(200);
 
         const m = await page.evaluate(() => {
@@ -446,10 +446,10 @@ test.describe('regression: more-button fills its line', () => {
 });
 
 test.describe('regression: maxLines overflow hides pills and keeps them inside', () => {
-    test('select-all overflow: extra pills hidden, visible ones stay within reserved lines', async ({ page }) => {
+    test('check-all overflow: extra pills hidden, visible ones stay within reserved lines', async ({ page }) => {
         await page.goto('/tests/integration/harness.html?case=overflowMulti');
         await page.waitForFunction(() => Boolean(window.__select));
-        await page.evaluate(() => window.__api.selectAll());
+        await page.evaluate(() => window.__api.checkAll());
         await page.waitForTimeout(200);
 
         const m = await page.evaluate(() => {

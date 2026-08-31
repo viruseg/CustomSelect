@@ -97,8 +97,8 @@ test.describe('selection', () => {
         await expect(popover(page)).toBeVisible();
         await option(page, 'b').click();
         expect(await page.evaluate(() => window.__api.getValue())).toEqual([]);
-        const clearBtnDisabled = await page.locator('.csel-select-all').isDisabled();
-        expect(clearBtnDisabled).toBe(true);
+        const checkAllBtnDisabled = await page.locator('.csel-check-all').isDisabled();
+        expect(checkAllBtnDisabled).toBe(true);
     });
 
     test('loading shows spinner and blocks selection/search input', async ({ page }) => {

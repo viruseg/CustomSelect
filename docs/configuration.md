@@ -60,8 +60,8 @@ new CustomSelect(target, config, events?)
 
 | Опция      | Тип    | По умолчанию | Описание                                                                                                                                        |
 | --------------- | --------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `showClearAll`  | `boolean` | `true`                  | Кнопка × очистки в триггере + «Clear all» в popover. Только multiple; видима при непустом выборе |
-| `showSelectAll` | `boolean` | `false`                 | Кнопка «Select all» (multiple). При активном поиске выбирает только найденные enabled-элементы  |
+| `showUncheckAll` | `boolean` | `true`                  | Кнопка × очистки в триггере + «Uncheck all» в popover. Только multiple; видима при непустом выборе |
+| `showCheckAll` | `boolean` | `false`                 | Кнопка «Check all» (multiple). При активном поиске выбирает только найденные enabled-элементы  |
 
 ### Состояния
 
@@ -106,7 +106,7 @@ new CustomSelect(target, config, events?)
 await select.updateConfig({ columns: 3, loading: false });
 ```
 
-Немедленно применяются: `columns`, `modalWidth`, `modalMaxHeight`, `columnGap`, `searchable`, `maxLines`, `lineHeight`, `placeholder`, `showClearAll`, `showSelectAll`, `disabled`, `readonly`, `loading`, а также все поисковые настройки.
+Немедленно применяются: `columns`, `modalWidth`, `modalMaxHeight`, `columnGap`, `searchable`, `maxLines`, `lineHeight`, `placeholder`, `showUncheckAll`, `showCheckAll`, `disabled`, `readonly`, `loading`, а также все поисковые настройки.
 
 Гарантии при открытом списке:
 

@@ -11,7 +11,7 @@ new CustomSelect(target, config?, events?)
 | ---------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `target`         | `HTMLElement | string` | Элемент-хост или CSS-селектор. Селектор должен соответствовать**ровно одному** элементу (0 → `Error`, >1 → `Error`). Библиотека строит UI внутри него; сам хост при `destroy()` не удаляется |
 | `config`         | `CustomSelectConfig`   | Конфигурация, см.[configuration.md](configuration.md)                                                                                                                                                                                                                                                 |
-| `events`         | `SelectEvents`         | Объект колбэков:`onSelect`, `onDeselect`, `onChange`, `onOpen`, `onClose`, `onSearch`, `onClear`                                                                                                                                                                                                      |
+| `events`         | `SelectEvents`         | Объект колбэков:`onSelect`, `onDeselect`, `onChange`, `onOpen`, `onClose`, `onSearch`, `onUncheckAll`                                                                                                                                                                                                      |
 
 Бросает:
 
@@ -144,18 +144,18 @@ await select.setValue([42]);       // single
 
 Для изменившихся элементов эмитятся `deselect`/`select`, затем один `change`.
 
-### clear()
+### uncheckAll()
 
 ```js
-await select.clear();
+await select.uncheckAll();
 ```
 
-Полная очистка выбора. Одна массовая операция: эмитит `clear`, затем один `change` — без per-item `deselect`. Работает независимо от поискового запроса и readonly/disabled.
+Полная очистка выбора. Одна массовая операция: эмитит `uncheckAll`, затем один `change` — без per-item `deselect`. Работает независимо от поискового запроса и readonly/disabled.
 
-### selectAll()
+### checkAll()
 
 ```js
-await select.selectAll();
+await select.checkAll();
 ```
 
 Выбирает все **enabled**-элементы (только multiple; в single mode — no-op). Если popover открыт и есть активный запрос — выбирает **только текущие результаты поиска**: из 100 элементов при запросе «car» будут выбраны 12 найденных enabled. Эмитит один `change`.
@@ -234,7 +234,7 @@ select.on('change', (instance, items) => {
 });
 ```
 
-Имена событий: `'select' | 'deselect' | 'change' | 'open' | 'close' | 'search' | 'clear'`. Полное описание — [events.md](events.md).
+Имена событий: `'select' | 'deselect' | 'change' | 'open' | 'close' | 'search' | 'uncheckAll'`. Полное описание — [events.md](events.md).
 
 ## destroy()
 

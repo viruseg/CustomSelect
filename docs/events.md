@@ -12,7 +12,7 @@ const select = new CustomSelect('#host', { items }, {
     onOpen: (instance) => {},
     onClose: (instance) => {},
     onSearch: (instance, query, matched) => {},
-    onClear: (instance) => {},
+    onUncheckAll: (instance) => {},
 });
 ```
 
@@ -24,7 +24,7 @@ select.on('change', handler);
 select.off('change', handler);
 ```
 
-Имена событий: `'select'`, `'deselect'`, `'change'`, `'open'`, `'close'`, `'search'`, `'clear'`.
+Имена событий: `'select'`, `'deselect'`, `'change'`, `'open'`, `'close'`, `'search'`, `'uncheckAll'`.
 
 Первый аргумент каждого обработчика — инстанс `CustomSelect`, вызвавший событие.
 
@@ -58,15 +58,15 @@ Popover закрывается после завершения обработч�
 
 Popover остаётся открытым.
 
-### clear()
+### uncheckAll()
 
 Одна массовая операция — **без** per-item `deselect`:
 
 ```text
-очистка → clear() → change([])
+очистка → uncheckAll() → change([])
 ```
 
-### selectAll()
+### checkAll()
 
 Тоже одна массовая операция:
 

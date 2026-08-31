@@ -13,8 +13,8 @@ const NUMERIC_RULES = /** @type {const} */ ({
     cursorDistanceThreshold: { min: 0 },
 });
 
-const BOOLEAN_FIELDS = ['multiple', 'searchable', 'searchCaseSensitive', 'showClearAll',
-    'showSelectAll', 'disabled', 'readonly', 'loading', 'animations',
+const BOOLEAN_FIELDS = ['multiple', 'searchable', 'searchCaseSensitive', 'showUncheckAll',
+    'showCheckAll', 'disabled', 'readonly', 'loading', 'animations',
     'showSelectedItems', 'highlightSearchMatches'];
 
 const SEARCH_MODES = new Set(['contains', 'startsWith', 'exact', 'fuzzy']);
@@ -39,8 +39,8 @@ function buildDefaults() {
         searchCaseSensitive: false,
         emptySearchText: 'No matches found',
         emptyListText: 'No items available',
-        showClearAll: true,
-        showSelectAll: false,
+        showUncheckAll: true,
+        showCheckAll: false,
         disabled: false,
         readonly: false,
         loading: false,

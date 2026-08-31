@@ -48,7 +48,7 @@
 .csel-root:focus-visible,
 .csel-root:focus-within { outline: none; border-color: var(--csel-border-focus); }
 .csel-root--disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
-.csel-root--readonly .csel-clear,
+.csel-root--readonly .csel-uncheck,
 .csel-root--readonly .csel-tag-remove { display: none; }
 
 .csel-value-area {
@@ -113,7 +113,7 @@
 .csel-more:hover { color: var(--csel-text); background: var(--csel-bg-hover); }
 .csel-more:disabled { opacity: 0.4; }
 
-.csel-clear {
+.csel-uncheck {
     all: unset;
     cursor: pointer;
     width: 20px;
@@ -124,8 +124,8 @@
     border-radius: 4px;
     color: var(--csel-text-muted);
 }
-.csel-clear:hover { color: var(--csel-text); background: var(--csel-bg-hover); }
-.csel-clear:disabled { opacity: 0.4; cursor: default; }
+.csel-uncheck:hover { color: var(--csel-text); background: var(--csel-bg-hover); }
+.csel-uncheck:disabled { opacity: 0.4; cursor: default; }
 
 .csel-toggle {
     all: unset;
@@ -151,7 +151,7 @@
 
 /* all:unset стирает UA-правило [hidden]{display:none} — восстанавливаем явно */
 .csel-more[hidden],
-.csel-clear[hidden] { display: none; }
+.csel-uncheck[hidden] { display: none; }
 
 /* Плейсхолдер и кнопки триггера не выделяются мышкой */
 .csel-placeholder,
@@ -238,8 +238,8 @@
     border-bottom: 1px solid var(--csel-divider);
 }
 .csel-batch:not(:has(:not([hidden]))) { display: none; }
-.csel-select-all,
-.csel-clear-all {
+.csel-check-all,
+.csel-uncheck-all {
     all: unset;
     cursor: pointer;
     padding: 4px 10px;
@@ -248,14 +248,14 @@
     color: var(--csel-text-muted);
     border: 1px solid var(--csel-border);
 }
-.csel-select-all:hover:not(:disabled),
-.csel-clear-all:hover:not(:disabled) {
+.csel-check-all:hover:not(:disabled),
+.csel-uncheck-all:hover:not(:disabled) {
     color: var(--csel-text);
     border-color: var(--csel-accent);
     background: var(--csel-bg-hover);
 }
-.csel-select-all:disabled,
-.csel-clear-all:disabled { opacity: 0.4; cursor: default; }
+.csel-check-all:disabled,
+.csel-uncheck-all:disabled { opacity: 0.4; cursor: default; }
 
 /* Single column: обычный вертикальный список со скроллом */
 .csel-listbox {
@@ -365,8 +365,8 @@
    UA-правило [hidden] даже без all:unset (авторские стили сильнее UA в каскаде). */
 .csel-search-header[hidden],
 .csel-search-clear[hidden],
-.csel-select-all[hidden],
-.csel-clear-all[hidden] { display: none; }
+.csel-check-all[hidden],
+.csel-uncheck-all[hidden] { display: none; }
 
 /* Офф-скрин замер intrinsic-размера до showPopover (popover ещё display:none) */
 .csel-popover--measure {

@@ -89,7 +89,7 @@ const select = await CustomSelect.createInstance('#city', {
 <div class="csel-root" role="group">      ← клик открывает список
     ├── значение (текст) или теги          ← multiple mode
     ├── кнопка «...»                       ← если теги не поместились
-    ├── кнопка ×                           ← очистка (showClearAll)
+    ├── кнопка ×                           ← очистка (showUncheckAll)
     └── кнопка-шеврон                      ← toggle
 </div>
 ```
@@ -99,7 +99,7 @@ const select = await CustomSelect.createInstance('#city', {
 ```text
 <div popover="manual" class="csel-popover">
     ├── поиск                              ← searchable=true
-    ├── 'Select all' / 'Clear all'         ← batch actions
+    ├── 'Check all' / 'Uncheck all'         ← batch actions
     └── listbox с опциями и группами
 </div>
 ```

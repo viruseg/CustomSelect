@@ -68,16 +68,16 @@ describe('selection basics', () => {
 });
 
 describe('mass operations', () => {
-    it('selectAll skips disabled and already-selected', () => {
+    it('checkAll skips disabled and already-selected', () => {
         const sm = new StateManager({ items: items(), multiple: true });
-        const added = sm.selectAll();
+        const added = sm.checkAll();
         expect(added.map((i) => i.id)).toEqual([1, 2, '1', 'g']);
-        expect(sm.selectAll([2, 3])).toEqual([]);
+        expect(sm.checkAll([2, 3])).toEqual([]);
     });
 
-    it('clear empties selection', () => {
+    it('uncheckAll empties selection', () => {
         const sm = new StateManager({ items: items(), multiple: true, selectedIds: [1, 2] });
-        sm.clear();
+        sm.uncheckAll();
         expect(sm.getSelectedIds()).toEqual([]);
     });
 });

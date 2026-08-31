@@ -21,7 +21,7 @@ import { tokenize, highlightSegments } from './SearchEngine.js';
  * @property {HTMLDivElement} tagsContainer
  * @property {HTMLButtonElement} moreButton
  * @property {HTMLSpanElement} placeholder
- * @property {HTMLButtonElement} clearButton
+ * @property {HTMLButtonElement} uncheckButton
  * @property {HTMLButtonElement} toggleButton
  */
 
@@ -65,7 +65,7 @@ export default class DomRenderer {
     /** @type {Set<HTMLButtonElement>} */
     #tagRemoveButtons = new Set();
     /** @type {{popover: HTMLElement, searchHeader: HTMLElement, searchInput: HTMLInputElement, searchClear: HTMLButtonElement,
-     *          selectAllButton: HTMLButtonElement, clearAllButton: HTMLButtonElement,
+     *          checkAllButton: HTMLButtonElement, uncheckAllButton: HTMLButtonElement,
      *          listbox: HTMLElement, statusBox: HTMLElement} | null} */
     #popoverRefs = null;
     /** @type {RendererNavOption[]} */
@@ -138,13 +138,13 @@ export default class DomRenderer {
         // выталкивает его к правому краю триггера.
         valueArea.append(placeholder, valueText, tagsContainer, moreButton);
 
-        const clearButton = document.createElement('button');
-        clearButton.type = 'button';
-        clearButton.className = 'csel-clear';
-        clearButton.textContent = '×';
-        clearButton.setAttribute('aria-label', 'Clear selection');
-        clearButton.tabIndex = -1;
-        clearButton.hidden = true;
+        const uncheckButton = document.createElement('button');
+        uncheckButton.type = 'button';
+        uncheckButton.className = 'csel-uncheck';
+        uncheckButton.textContent = '×';
+        uncheckButton.setAttribute('aria-label', 'Uncheck all');
+        uncheckButton.tabIndex = -1;
+        uncheckButton.hidden = true;
 
         const toggleButton = document.createElement('button');
         toggleButton.type = 'button';
@@ -166,10 +166,10 @@ export default class DomRenderer {
         chevron.append(path);
         toggleButton.append(chevron);
 
-        root.append(valueArea, clearButton, toggleButton);
+        root.append(valueArea, uncheckButton, toggleButton);
         target.append(root);
 
-        this.#els = { root, valueArea, valueText, tagsContainer, moreButton, placeholder, clearButton, toggleButton };
+        this.#els = { root, valueArea, valueText, tagsContainer, moreButton, placeholder, uncheckButton, toggleButton };
         return this.#els;
     }
 
@@ -251,13 +251,13 @@ export default class DomRenderer {
     }
 
     /** @param {boolean} visible */
-    setClearVisible(visible) {
-        this.#els.clearButton.hidden = !visible;
+    setUncheckVisible(visible) {
+        this.#els.uncheckButton.hidden = !visible;
     }
 
     /** @param {CustomSelectConfig} config */
     setStateFlags(config) {
-        const { root, clearButton, moreButton, toggleButton } = this.#els;
+        const { root, uncheckButton, moreButton, toggleButton } = this.#els;
         const disabled = config.disabled === true;
         const readonly = config.readonly === true;
         root.classList.toggle('csel-root--disabled', disabled);
@@ -269,7 +269,7 @@ export default class DomRenderer {
         else root.tabIndex = 0;
         toggleButton.disabled = disabled;
         const lockButtons = disabled || readonly;
-        clearButton.disabled = lockButtons;
+        uncheckButton.disabled = lockButtons;
         moreButton.disabled = disabled;
         for (const btn of this.#tagRemoveButtons) btn.disabled = lockButtons;
     }
@@ -313,7 +313,7 @@ export default class DomRenderer {
     /**
      * Создаёт popover-контейнер однократно и монтирует его в document.body.
      * @param {CustomSelectConfig} config
-     * @returns {{popover: HTMLElement, searchHeader: HTMLElement, searchInput: HTMLInputElement, searchClear: HTMLButtonElement, selectAllButton: HTMLButtonElement, clearAllButton: HTMLButtonElement, listbox: HTMLElement, statusBox: HTMLElement}}
+     * @returns {{popover: HTMLElement, searchHeader: HTMLElement, searchInput: HTMLInputElement, searchClear: HTMLButtonElement, checkAllButton: HTMLButtonElement, uncheckAllButton: HTMLButtonElement, listbox: HTMLElement, statusBox: HTMLElement}}
      */
     ensurePopover(config) {
         if (this.#popoverRefs) return this.#popoverRefs;
@@ -342,17 +342,17 @@ export default class DomRenderer {
 
         const batchBar = document.createElement('div');
         batchBar.className = 'csel-batch';
-        const selectAllButton = document.createElement('button');
-        selectAllButton.type = 'button';
-        selectAllButton.className = 'csel-select-all';
-        selectAllButton.textContent = 'Select all';
-        selectAllButton.tabIndex = -1;
-        const clearAllButton = document.createElement('button');
-        clearAllButton.type = 'button';
-        clearAllButton.className = 'csel-clear-all';
-        clearAllButton.textContent = 'Clear all';
-        clearAllButton.tabIndex = -1;
-        batchBar.append(selectAllButton, clearAllButton);
+        const checkAllButton = document.createElement('button');
+        checkAllButton.type = 'button';
+        checkAllButton.className = 'csel-check-all';
+        checkAllButton.textContent = 'Check all';
+        checkAllButton.tabIndex = -1;
+        const uncheckAllButton = document.createElement('button');
+        uncheckAllButton.type = 'button';
+        uncheckAllButton.className = 'csel-uncheck-all';
+        uncheckAllButton.textContent = 'Uncheck all';
+        uncheckAllButton.tabIndex = -1;
+        batchBar.append(checkAllButton, uncheckAllButton);
 
         const listbox = document.createElement('div');
         listbox.className = 'csel-listbox';
@@ -366,7 +366,7 @@ export default class DomRenderer {
         popover.append(searchHeader, batchBar, listbox, statusBox);
         document.body.append(popover);
 
-        this.#popoverRefs = { popover, searchHeader, searchInput, searchClear, selectAllButton, clearAllButton, listbox, statusBox };
+        this.#popoverRefs = { popover, searchHeader, searchInput, searchClear, checkAllButton, uncheckAllButton, listbox, statusBox };
         this.applyPopoverConfig(config);
         return this.#popoverRefs;
     }
@@ -380,14 +380,14 @@ export default class DomRenderer {
     /** @param {CustomSelectConfig} config */
     applyPopoverConfig(config) {
         if (!this.#popoverRefs) return;
-        const { searchHeader, searchInput, selectAllButton, clearAllButton } = this.#popoverRefs;
+        const { searchHeader, searchInput, checkAllButton, uncheckAllButton } = this.#popoverRefs;
         searchHeader.hidden = config.searchable !== true;
         searchInput.disabled = config.loading === true || config.disabled === true;
         const lockActions = config.disabled === true || config.readonly === true || config.loading === true;
-        selectAllButton.hidden = !(config.multiple === true && config.showSelectAll === true);
-        clearAllButton.hidden = !(config.multiple === true && config.showClearAll === true);
-        selectAllButton.disabled = lockActions;
-        clearAllButton.disabled = lockActions;
+        checkAllButton.hidden = !(config.multiple === true && config.showCheckAll === true);
+        uncheckAllButton.hidden = !(config.multiple === true && config.showUncheckAll === true);
+        checkAllButton.disabled = lockActions;
+        uncheckAllButton.disabled = lockActions;
     }
 
     /**

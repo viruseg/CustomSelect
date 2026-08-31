@@ -104,7 +104,7 @@ export default class StateManager {
      * @param {(string|number)[]} [candidates]
      * @returns {CustomSelectItem[]}
      */
-    selectAll(candidates) {
+    checkAll(candidates) {
         const source = candidates ?? this.#items.map((i) => i.id);
         /** @type {CustomSelectItem[]} */
         const added = [];
@@ -117,7 +117,7 @@ export default class StateManager {
         return added;
     }
 
-    clear() {
+    uncheckAll() {
         this.#selected.clear();
     }
 

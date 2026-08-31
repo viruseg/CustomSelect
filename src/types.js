@@ -229,20 +229,20 @@ export class CustomSelectConfig {
     emptyListText;
 
     /**
-     * Кнопка очистки «×» в триггере и «Clear all» в popover
+     * Кнопка очистки «×» в триггере и «Uncheck all» в popover
      * (только multiple; видима при непустом выборе).
      * По умолчанию `true`.
      * @type {boolean|undefined}
      */
-    showClearAll;
+    showUncheckAll;
 
     /**
-     * Кнопка «Select all» (multiple); при активном поиске выбирает только
+     * Кнопка «Check all» (multiple); при активном поиске выбирает только
      * найденные enabled-элементы.
      * По умолчанию `false`.
      * @type {boolean|undefined}
      */
-    showSelectAll;
+    showCheckAll;
 
     /**
      * Полная блокировка взаимодействия; открытый popover закрывается,
@@ -379,10 +379,10 @@ export class SelectEvents {
     onSearch;
 
     /**
-     * Вызывается при полной очистке выбора кнопкой «Clear all».
+     * Вызывается при полной очистке выбора кнопкой «Uncheck all`.
      * @type {((instance: CustomSelect) => Promise<void> | void)|undefined}
      */
-    onClear;
+    onUncheckAll;
 }
 
 /**

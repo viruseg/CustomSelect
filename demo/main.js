@@ -39,9 +39,9 @@ function section(title) {
     });
 }
 
-// Multiple with tags/maxLines/clear/selectAll
+// Multiple with tags/maxLines/uncheckAll/checkAll
 {
-    const box = section('Multiple / tags / maxLines=2 / select-all');
+    const box = section('Multiple / tags / maxLines=2 / check-all');
     const host = document.createElement('div');
     host.style.width = '420px';
     box.append(host);
@@ -49,7 +49,7 @@ function section(title) {
         items: makeFruits(),
         multiple: true,
         maxLines: 2,
-        showSelectAll: true,
+        showCheckAll: true,
         selectedIds: ['apple', 'banana'],
         mainWidth: '100%'
     });

@@ -104,7 +104,7 @@ const select = new CustomSelect('#tags', {
     multiple: true,
     selectedIds: ['a', 'b'],   // начальный выбор
     maxLines: 2,               // до 2 строк тегов, остальное скрывается за «...»
-    showSelectAll: true,       // 'Select all' button
+    showCheckAll: true,       // 'Check all' button
 });
 ```
 
@@ -172,7 +172,7 @@ select.on('change', (instance, items) => { /* ... */ });
 | `setValue(ids)` | Программная установка выбора (async) |
 | `setItems(items)` | Замена списка элементов (async) |
 | `updateConfig(patch)` | Реактивное обновление конфигурации (async) |
-| `clear()` / `selectAll()` | Массовые операции (async) |
+| `uncheckAll()` / `checkAll()` | Массовые операции (async) |
 | `on(event, fn)` / `off(event, fn)` | Подписка на события |
 | `setClassName(className)` | Установка пользовательских классов на root |
 | `setAttributes(attributes)` | Установка пользовательских атрибутов на root |

@@ -25,7 +25,7 @@ const EVENT_ALIASES = /** @type {const} */ ({
     onOpen: 'open',
     onClose: 'close',
     onSearch: 'search',
-    onClear: 'clear',
+    onUncheckAll: 'uncheckAll',
 });
 
 /**
@@ -189,7 +189,7 @@ export default class CustomSelect {
             this.#renderer.setMoreVisible(false);
         }
         // «×» очистки — только multiple: в single пользователь не снимает выбор
-        this.#renderer.setClearVisible(c.showClearAll === true && c.multiple === true && selected.length > 0);
+        this.#renderer.setUncheckVisible(c.showUncheckAll === true && c.multiple === true && selected.length > 0);
         this.#renderer.setStateFlags(c);
     }
 
@@ -275,9 +275,9 @@ export default class CustomSelect {
                 void this.#uiRemoveTag(this.#parseId(/** @type {string} */ (removeBtn.dataset.id)));
                 return;
             }
-            if (t.closest('.csel-clear')) {
+            if (t.closest('.csel-uncheck')) {
                 evt.stopPropagation();
-                void this.clear();
+                void this.uncheckAll();
                 return;
             }
             if (t.closest('.csel-toggle')) {
@@ -380,9 +380,9 @@ export default class CustomSelect {
             void this.#onQueryChanged('');
         };
 
-        const onSelectAllClick = () => void this.selectAll();
+        const onCheckAllClick = () => void this.checkAll();
 
-        const onClearAllClick = () => void this.clear();
+        const onUncheckAllClick = () => void this.uncheckAll();
 
         /** @param {Event} e */
         const onListClick = (e) => {
@@ -429,8 +429,8 @@ export default class CustomSelect {
 
         refs.searchInput.addEventListener('input', onSearchInput);
         refs.searchClear.addEventListener('click', onSearchClear);
-        refs.selectAllButton.addEventListener('click', onSelectAllClick);
-        refs.clearAllButton.addEventListener('click', onClearAllClick);
+        refs.checkAllButton.addEventListener('click', onCheckAllClick);
+        refs.uncheckAllButton.addEventListener('click', onUncheckAllClick);
         refs.listbox.addEventListener('click', onListClick);
         refs.popover.addEventListener('keydown', /** @type {EventListener} */ (onPopoverKeyDown));
 
@@ -469,8 +469,8 @@ export default class CustomSelect {
         this.#disposables.push(() => {
             refs.searchInput.removeEventListener('input', onSearchInput);
             refs.searchClear.removeEventListener('click', onSearchClear);
-            refs.selectAllButton.removeEventListener('click', onSelectAllClick);
-            refs.clearAllButton.removeEventListener('click', onClearAllClick);
+            refs.checkAllButton.removeEventListener('click', onCheckAllClick);
+            refs.uncheckAllButton.removeEventListener('click', onUncheckAllClick);
             refs.listbox.removeEventListener('click', onListClick);
             refs.listbox.removeEventListener('wheel', onListWheel);
             refs.popover.removeEventListener('keydown', /** @type {EventListener} */ (onPopoverKeyDown));
@@ -646,7 +646,7 @@ export default class CustomSelect {
      * Массовый выбор: только по текущим результатам поиска при непустом query (спека §15).
      * @returns {Promise<void>}
      */
-    async selectAll() {
+    async checkAll() {
         this.#assertAlive();
         const c = this.#cfg();
         if (!c.multiple) return;
@@ -654,19 +654,19 @@ export default class CustomSelect {
             ? undefined
             : this.#lastMatched.filter((i) => i.disabled !== true).map((i) => i.id);
         this.#mutateAndSync(() => {
-            this.#state.selectAll(candidates);
+            this.#state.checkAll(candidates);
         }, async () => {
             await this.#emitChange();
         }, { keepOpen: true });
     }
 
     /** @returns {Promise<void>} */
-    async clear() {
+    async uncheckAll() {
         this.#assertAlive();
         this.#mutateAndSync(() => {
-            this.#state.clear();
+            this.#state.uncheckAll();
         }, async () => {
-            await this.#emitter.emit('clear');
+            await this.#emitter.emit('uncheckAll');
             await this.#emitChange();
         }, { keepOpen: true });
     }
@@ -1163,7 +1163,7 @@ export default class CustomSelect {
             this.#scheduleReposition();
         }
 
-        const viewKeys = /** @type {const} */ (['searchable', 'searchMode', 'searchCaseSensitive', 'showSelectedItems', 'highlightSearchMatches', 'emptySearchText', 'emptyListText', 'placeholder', 'showClearAll', 'showSelectAll', 'loading']);
+        const viewKeys = /** @type {const} */ (['searchable', 'searchMode', 'searchCaseSensitive', 'showSelectedItems', 'highlightSearchMatches', 'emptySearchText', 'emptyListText', 'placeholder', 'showUncheckAll', 'showCheckAll', 'loading']);
         const viewChanged = viewKeys.some((k) => JSON.stringify(prev[k]) !== JSON.stringify(next[k]));
         if (viewChanged) {
             this.#syncMainView();

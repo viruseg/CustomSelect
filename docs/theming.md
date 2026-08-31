@@ -62,7 +62,7 @@
     │   ├── .csel-tags                  ← multiple
     │   │   └── .csel-tag > .csel-tag-content + .csel-tag-remove[data-id]
     │   └── .csel-more                  ← кнопка «...»
-    ├── .csel-clear                     ← кнопка ×
+    ├── .csel-uncheck                     ← кнопка ×
     └── .csel-toggle > svg.csel-chevron
 
 <body>
@@ -72,8 +72,8 @@
     │   ├── input.csel-search-input[type=search]
     │   └── .csel-search-clear
     ├── .csel-batch
-    │   ├── .csel-select-all
-    │   └── .csel-clear-all
+    │   ├── .csel-check-all
+    │   └── .csel-uncheck-all
     ├── .csel-listbox [role=listbox]
     │   ├── .csel-group-header
     │   └── .csel-option[--selected|--disabled|--active]

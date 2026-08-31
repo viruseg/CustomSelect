@@ -27,7 +27,7 @@
     const cases = {
         basic: { items: baseItems },
         single: { items: baseItems, selectedIds: ['a'] },
-        multi: { items: baseItems, multiple: true, selectedIds: ['a'], showSelectAll: true, showClearAll: true, maxLines: 1 },
+        multi: { items: baseItems, multiple: true, selectedIds: ['a'], showCheckAll: true, showUncheckAll: true, maxLines: 1 },
         search: { items: baseItems, highlightSearchMatches: true },
         columns: { items: Array.from({ length: 30 }, (_, i) => ({ id: i, type: 'text', content: `Opt ${i}`, group: i < 15 ? 'A' : 'B' })), columns: 3, modalMaxHeight: 180 },
         tallSingle: { items: Array.from({ length: 30 }, (_, i) => ({ id: i, type: 'text', content: `Opt ${i}` })), modalMaxHeight: 180 },
@@ -56,7 +56,7 @@
             items: Array.from({ length: 22 }, (_, i) => ({ id: i, type: 'text', content: `Fruit ${String(i + 1).padStart(2, '0')}` })),
             multiple: true,
             maxLines: 2,
-            showSelectAll: true,
+            showCheckAll: true,
         },
         readonly: { items: baseItems, readonly: true },
         loading: { items: baseItems, loading: true },
@@ -82,7 +82,7 @@
             multiple: true,
             maxLines: 2,
             selectedIds: ['a', 'b'],
-            showSelectAll: true,
+            showCheckAll: true,
             mainWidth: 100,
         },
     };
@@ -106,7 +106,7 @@
         onOpen: (_instance) => window.dispatchEvent(new CustomEvent('csel-open')),
         onClose: (_instance) => window.dispatchEvent(new CustomEvent('csel-close')),
         onSearch: (_instance, q, matched) => window.dispatchEvent(new CustomEvent('csel-search', { detail: { q, n: matched.length } })),
-        onClear: (_instance) => window.dispatchEvent(new CustomEvent('csel-clear')),
+        onUncheckAll: (_instance) => window.dispatchEvent(new CustomEvent('csel-uncheckAll')),
     });
 
     window.__api = window.__select;
