@@ -42,6 +42,7 @@
     color: var(--csel-text);
     cursor: pointer;
     position: relative;
+    user-select: none;
     transition: border-color var(--csel-transition);
 }
 .csel-root:hover { border-color: var(--csel-text-muted); }
@@ -153,9 +154,7 @@
 .csel-more[hidden],
 .csel-uncheck[hidden] { display: none; }
 
-/* Плейсхолдер и кнопки триггера не выделяются мышкой */
-.csel-placeholder,
-.csel-root button { user-select: none; }
+.csel-placeholder { user-select: none; }
 
 /* multiple: вертикальный ритм целиком внутри value-area — отступы
    сверху / между строками / снизу равны при полном заполнении, а первый
@@ -193,6 +192,7 @@
     border-radius: var(--csel-radius);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
     color: var(--csel-text);
+    user-select: none;
     z-index: 2147483000;
 }
 .csel-popover:not(:popover-open) { display: none; }
@@ -213,6 +213,7 @@
     outline: none;
     color: var(--csel-text);
     font-size: 13px;
+    user-select: text;
     /* компактная строка поиска: заметно ниже опций списка */
     height: calc(var(--csel-line-height) - 12px);
 }
@@ -246,6 +247,7 @@
     font-size: 13px;
     border-radius: 4px;
     color: var(--csel-text-muted);
+    user-select: none;
     border: 1px solid var(--csel-border);
 }
 .csel-check-all:hover:not(:disabled),
@@ -290,7 +292,6 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--csel-text-muted);
-    user-select: none;
 }
 
 .csel-option {
@@ -301,7 +302,6 @@
     padding: 0 8px;
     border-radius: 4px;
     cursor: pointer;
-    user-select: none;
     white-space: nowrap;
     overflow: hidden;
 }
